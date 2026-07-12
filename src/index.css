@@ -56,27 +56,6 @@ p {
   margin: 0;
 }
 
-/* Reveal-on-scroll — masqué uniquement si JS est présent (classe .js posée par main.jsx),
-   sinon le contenu reste visible sans JavaScript */
-html.js [data-reveal] {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
-}
-
-html.js [data-reveal].is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html.js [data-reveal] {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
 /* -------------------- Nav -------------------- */
 .nav {
   position: fixed;
@@ -534,6 +513,8 @@ html.js [data-reveal].is-visible {
 }
 
 .cert-card {
+  position: relative;
+  overflow: hidden;
   background: var(--bg-dark);
   color: var(--text-on-dark);
   border-radius: var(--radius);
@@ -569,15 +550,41 @@ html.js [data-reveal].is-visible {
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
   margin-bottom: 64px;
 }
 
+@media (max-width: 720px) {
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .skill-card {
+  position: relative;
+  overflow: hidden;
   background: var(--bg-alt);
   border-radius: var(--radius);
   padding: 32px;
+}
+
+.card-spotlight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(
+    400px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgba(0, 113, 227, 0.18),
+    transparent 60%
+  );
+}
+
+.cert-card:hover .card-spotlight,
+.skill-card:hover .card-spotlight {
+  opacity: 1;
 }
 
 .skill-card__title {
@@ -623,6 +630,69 @@ html.js [data-reveal].is-visible {
 }
 
 /* -------------------- Contact -------------------- */
+#contact {
+  position: relative;
+}
+
+.target-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.target-cursor__dot {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.target-cursor__bracket {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.target-cursor__corner {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+}
+
+.target-cursor__corner--0 {
+  top: 0;
+  left: 0;
+  border-top: 2px solid;
+  border-left: 2px solid;
+}
+
+.target-cursor__corner--1 {
+  top: 0;
+  right: 0;
+  border-top: 2px solid;
+  border-right: 2px solid;
+}
+
+.target-cursor__corner--2 {
+  bottom: 0;
+  right: 0;
+  border-bottom: 2px solid;
+  border-right: 2px solid;
+}
+
+.target-cursor__corner--3 {
+  bottom: 0;
+  left: 0;
+  border-bottom: 2px solid;
+  border-left: 2px solid;
+}
+
 .contact__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

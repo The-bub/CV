@@ -1,21 +1,21 @@
 import { experiences } from "../data";
-import { useReveal } from "../hooks/useReveal";
+import Reveal from "./Reveal";
+import BlurText from "./BlurText";
 
 export default function Experience() {
-  const ref = useReveal();
   return (
-    <section id="parcours" className="section" ref={ref}>
+    <section id="parcours" className="section">
       <div className="section__inner">
-        <p className="section__eyebrow" data-reveal>
+        <Reveal as="p" className="section__eyebrow">
           Parcours
-        </p>
-        <h2 className="section__title" data-reveal>
-          Expériences professionnelles
+        </Reveal>
+        <h2 className="section__title">
+          <BlurText text="Expériences professionnelles" as="span" delay={30} />
         </h2>
 
         <div className="timeline">
           {experiences.map((exp, i) => (
-            <article className="timeline__item" data-reveal key={i}>
+            <Reveal as="article" className="timeline__item" key={i}>
               <div className="timeline__marker" />
               <div className="timeline__content">
                 <span className="timeline__period">{exp.period}</span>
@@ -27,7 +27,7 @@ export default function Experience() {
                   ))}
                 </ul>
               </div>
-            </article>
+            </Reveal>
           ))}
         </div>
       </div>

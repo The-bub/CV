@@ -1,26 +1,25 @@
 import { education } from "../data";
-import { useReveal } from "../hooks/useReveal";
+import Reveal from "./Reveal";
 
 export default function Education() {
-  const ref = useReveal();
   return (
-    <section id="formation" className="section section--alt" ref={ref}>
+    <section id="formation" className="section section--alt">
       <div className="section__inner">
-        <p className="section__eyebrow" data-reveal>
+        <Reveal as="p" className="section__eyebrow">
           Formation
-        </p>
-        <h2 className="section__title" data-reveal>
+        </Reveal>
+        <Reveal as="h2" className="section__title">
           Un parcours par alternance
-        </h2>
+        </Reveal>
 
         <div className="edu-grid">
           {education.map((ed, i) => (
-            <article className="edu-card" data-reveal key={i}>
+            <Reveal as="article" className="edu-card" key={i}>
               <span className="edu-card__period">{ed.period}</span>
               <h3 className="edu-card__title">{ed.title}</h3>
               <p className="edu-card__school">{ed.school}</p>
               {ed.detail && <p className="edu-card__detail">{ed.detail}</p>}
-            </article>
+            </Reveal>
           ))}
         </div>
       </div>
