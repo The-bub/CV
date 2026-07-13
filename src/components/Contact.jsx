@@ -45,10 +45,15 @@ export default function Contact() {
             <span className="contact__label">LinkedIn</span>
             <span className="contact__value">Voir le profil</span>
           </a>
-          <div className="contact__item cursor-target">
+          <a
+            className="contact__item cursor-target"
+            href={contact.maps}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <span className="contact__label">Adresse</span>
             <span className="contact__value">{contact.address}</span>
-          </div>
+          </a>
         </Reveal>
       </div>
 

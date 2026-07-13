@@ -6,6 +6,7 @@ export const profile = {
     mobile: "06 33 67 85 61",
     email: "eliot.bedel.contact@icloud.com",
     address: "Nantes / Carquefou (44)",
+    maps: "https://maps.app.goo.gl/56KpnGDwBrJwTuTY9",
     linkedin: "https://www.linkedin.com/in/eliot-bedel/",
   },
 };
@@ -136,7 +137,7 @@ export const skills = [
   {
     category: "GRC",
     items: [
-      "Analyse de risques (EBIOS Risk Manager)",
+      "Analyse de risques (EBIOS Risk Manager, ISO 27005)",
       "Système de management de la sécurité (ISO 27001/27002)",
       "Continuité d'activité (ISO 22301, BIA, PCA/PRA)",
       "Conformité réglementaire (RGPD, CNIL)",
@@ -158,5 +159,13 @@ export const skills = [
 export const hobbies = {
   tech: "Nouvelles technologies",
   ctf: ["NetWars London : 2e", "LeHack 2022 : 2e"],
-  other: ["Jeux vidéo compétitif", "Bénévole événementiel (BZHack)"],
+  other: [
+    "Jeux vidéo compétitif",
+    "Bénévole événementiel (BZHack)",
+    "Piano",
+    "CISSP",
+    "Sécurité IA",
+    "Blockchain",
+    "Macro-économie",
+  ],
 };
