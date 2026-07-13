@@ -1,7 +1,7 @@
 export const profile = {
   name: "Eliot Bedel",
   title: "Ingénieur Cybersécurité",
-  bio: "J'ai piloté une Red Team et mené des tests d'intrusion durant 3 ans, avant de me tourner vers le management du risque IT. Aujourd'hui, j'accompagne l'identification et la maîtrise des risques sur des périmètres applicatifs et des activités critiques, pour offrir une vision 360° du risque cyber. Pour ce faire, j'allie l'expertise technique offensive à une approche stratégique de protection des SI. Je transforme ces connaissances en leviers métiers, via des analyses de risques, des priorisations de vulnérabilités et de l'amélioration continue du SMSI, tout en conseillant sur la conformité et la maturité SSI, afin de traduire la complexité technique en risques business actionnables.",
+  bio: "J'ai piloté une Red Team et mené des tests d'intrusion durant 3 ans, avant de me tourner vers le management du risque IT. Aujourd'hui, j'accompagne l'identification et la maîtrise des risques sur des périmètres applicatifs et des activités critiques, pour offrir une vision 360° du risque cyber. Pour ce faire, j'allie l'expertise technique offensive à une approche stratégique de protection des SI. Je transforme ces connaissances en leviers métiers, via des analyses de risques, des priorisations de vulnérabilités, tout en conseillant sur la conformité et la maturité SSI, afin de traduire la complexité technique en risques business actionnables.",
   contact: {
     mobile: "06 33 67 85 61",
     email: "eliot.bedel.contact@icloud.com",
