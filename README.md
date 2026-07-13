@@ -1,75 +1,83 @@
 # CV-Web
 
-CV en ligne développé avec **React** et **Vite**, destiné à présenter un profil d'ingénieur cybersécurité de manière moderne, lisible et déployable sur GitHub Pages.
+CV en ligne d'Eliot Bedel, développé avec **React** et **Vite**, déployé automatiquement sur GitHub Pages.
+
+Site en ligne : [the-bub.github.io/CV](https://the-bub.github.io/CV/)
 
 ## Stack
 
-- React.
-- Vite.
-- JavaScript ES modules via `type: "module"`.
-- Outils npm avec scripts `dev`, `build`, `lint` et `preview`.
+- React 19 + Vite.
+- CSS pur (pas de framework CSS).
+- [`motion`](https://motion.dev) et [`gsap`](https://gsap.com) pour les animations.
+- Oxlint pour le lint.
 
 ## Lancer le projet en local
 
-Prérequis : Node.js et npm installés sur la machine.
+Prérequis : Node.js et npm.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Le serveur de développement Vite permet de tester le site localement avant publication.
+Le serveur de développement Vite tourne sur `http://localhost:5173` (le site répond sur `/CV/` du fait du `base` configuré dans `vite.config.js`, cohérent avec l'URL de production).
 
-## Build de production
+Autres scripts :
 
 ```bash
-npm run build
+npm run build    # build de production dans dist/
+npm run preview  # sert le build de production en local
+npm run lint     # vérifie le code avec Oxlint
 ```
 
-Cette commande génère la version statique du site à publier, généralement dans le dossier `dist/` pour un projet Vite.
+## Modifier le contenu du CV
 
-## Déploiement GitHub Pages
+Tout le contenu texte du site est centralisé dans **[`src/data.js`](src/data.js)** — c'est le seul fichier à modifier pour mettre à jour le CV, aucune connaissance de React n'est nécessaire. Les composants (`src/components/`) ne font que lire ces données et les afficher ; ils n'ont pas besoin d'être touchés pour un changement de contenu.
 
-Le dépôt ayant pour nom `CV`, le déploiement GitHub Pages doit tenir compte du sous-chemin `/CV/` afin que les assets se chargent correctement en production.
+Le fichier exporte plusieurs objets :
 
-Exemple de configuration dans `vite.config.js` :
+| Export | Rôle | Où c'est affiché |
+|---|---|---|
+| `profile` | Nom, titre, bio, coordonnées de contact (téléphone, email, adresse, lien Maps, LinkedIn) | Hero + section Contact |
+| `experiences` | Liste des expériences professionnelles (rôle, entreprise, période, missions) | Section Parcours |
+| `education` | Liste des formations (période, titre, école, détail) | Section Formation |
+| `certifications` | Certifications obtenues (nom, organisme, intitulé complet, description) | Section Compétences |
+| `skills` | Compétences groupées par catégorie (`Red Team`, `Blue Team`, `GRC`, `Systèmes et réseaux`) | Section Compétences |
+| `hobbies` | Centres d'intérêt, résultats CTF, autres loisirs | Section Compétences |
 
-```js
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+Chaque export est un tableau ou un objet simple : pour ajouter une expérience, dupliquer un bloc `{ role, company, period, items }` dans le tableau `experiences` ; pour ajouter une compétence, ajouter une ligne dans le tableau `items` de la catégorie concernée ; etc. Aucune autre modification n'est nécessaire, les listes s'affichent automatiquement.
 
-export default defineConfig({
-  plugins: [react()],
-  base: '/CV/',
-})
-```
+**Photo** : remplacer le fichier `src/assets/eliot-bedel.jpg` (le nom de fichier n'a pas besoin de changer, il est importé par [`Hero.jsx`](src/components/Hero.jsx)).
 
-Étapes recommandées :
+**Favicon** : `public/favicon.svg`.
 
-1. Ajouter le paramètre `base: '/CV-Web/'` dans `vite.config.js`.
-2. Exécuter `npm run build` pour générer les fichiers statiques.
-3. Publier le contenu de `dist/` sur GitHub Pages via une branche `gh-pages` ou un workflow GitHub Actions.
+## Déploiement
+
+Le déploiement est **automatique** via [GitHub Actions](.github/workflows/deploy.yml) : tout push sur `main` déclenche un build (`npm run build`) et une publication sur GitHub Pages. Rien à faire manuellement — l'ancienne procédure de déploiement via une branche `gh-pages` n'est plus utilisée.
+
+Le dossier `dist/` (généré par le build) n'est pas suivi par git : il est reconstruit à chaque déploiement par le workflow.
 
 ## Structure du projet
 
 ```text
-CV-Web/
+cv-site/
+├── .github/workflows/deploy.yml   # CI/CD → GitHub Pages
 ├── index.html
-├── package.json
 ├── vite.config.js
 ├── public/
+│   └── favicon.svg
 └── src/
+    ├── data.js                    # tout le contenu du CV (voir ci-dessus)
+    ├── App.jsx / main.jsx
+    ├── index.css
+    ├── assets/                    # photo
+    ├── components/                # Hero, Nav, Experience, Education, Skills, Contact, Reveal, BlurText, TargetCursor
+    ├── hooks/
+    └── lib/
 ```
 
-Cette structure correspond à une application Vite classique avec point d'entrée HTML à la racine et code applicatif dans `src/`.
+## Licence
 
-## Scripts utiles
+**Tous droits réservés.**
 
-```bash
-npm run dev
-npm run build
-npm run preview
-npm run lint
-```
-
-Ces scripts sont déclarés dans le `package.json` du dépôt.
+© 2026 Eliot Bedel. Ce dépôt (code source, contenu textuel, données, images) est mis à disposition publiquement à titre de démonstration et de portfolio. Aucune reproduction, copie, modification, redistribution ou réutilisation, totale ou partielle, n'est autorisée sans l'accord écrit préalable de l'auteur.
