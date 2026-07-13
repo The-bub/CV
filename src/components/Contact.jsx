@@ -6,12 +6,10 @@ import TargetCursor from "./TargetCursor";
 export default function Contact() {
   const { contact } = profile;
   const sectionRef = useRef(null);
-  const prefersReducedMotion =
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   return (
     <section id="contact" className="section section--dark" ref={sectionRef}>
-      {!prefersReducedMotion && <TargetCursor containerRef={sectionRef} />}
+      <TargetCursor containerRef={sectionRef} />
       <div className="section__inner section__inner--narrow">
         <Reveal as="p" className="section__eyebrow">
           Contact

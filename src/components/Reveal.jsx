@@ -1,16 +1,7 @@
-import { motion, useReducedMotion } from "motion/react";
+import { motion } from "motion/react";
 
 export default function Reveal({ as: Tag = "div", className, children, ...rest }) {
-  const shouldReduceMotion = useReducedMotion();
   const MotionTag = motion[Tag];
-
-  if (shouldReduceMotion) {
-    return (
-      <Tag className={className} {...rest}>
-        {children}
-      </Tag>
-    );
-  }
 
   return (
     <MotionTag
