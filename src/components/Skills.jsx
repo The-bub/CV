@@ -21,6 +21,9 @@ export default function Skills() {
             <Reveal as="article" className="cert-card" key={cert.name} onMouseMove={onSpotlightMove}>
               <span className="card-spotlight" aria-hidden="true" />
               <span className="cert-card__org">{cert.org}</span>
+              {cert.status && (
+                <span className="cert-card__status">{cert.status}</span>
+              )}
               <h4 className="cert-card__name">{cert.name}</h4>
               <p className="cert-card__full">{cert.fullName}</p>
               <p className="cert-card__detail">{cert.detail}</p>
@@ -35,7 +38,7 @@ export default function Skills() {
           {skills.map((group, i) => (
             <Reveal as="article" className="skill-card" key={i} onMouseMove={onSpotlightMove}>
               <span className="card-spotlight" aria-hidden="true" />
-              <h3 className="skill-card__title">{group.category}</h3>
+              <h4 className="skill-card__title">{group.category}</h4>
               <ul className="skill-card__list">
                 {group.items.map((item, j) => (
                   <li key={j}>{item}</li>

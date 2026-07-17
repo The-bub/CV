@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 
 export default function BlurText({
   text,
@@ -12,6 +12,21 @@ export default function BlurText({
   const words = text.split(" ");
   const MotionTag = motion[Tag];
   const y = direction === "top" ? -20 : 20;
+  const reduceMotion = useReducedMotion();
+
+  if (reduceMotion) {
+    return (
+      <MotionTag
+        className={className}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, amount: 0.4 }}
+        transition={{ duration: 0.3 }}
+      >
+        {text}
+      </MotionTag>
+    );
+  }
 
   return (
     <MotionTag className={className}>

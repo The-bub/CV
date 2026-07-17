@@ -33,6 +33,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Generate CV PDF
+        run: npm run pdf
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:

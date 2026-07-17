@@ -31,6 +31,9 @@ export default function Nav() {
               {link.label}
             </a>
           ))}
+          <a href="/eliot-bedel-cv.pdf" download onClick={() => setOpen(false)}>
+            CV (PDF)
+          </a>
         </nav>
         <button
           type="button"

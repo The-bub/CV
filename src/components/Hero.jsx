@@ -15,6 +15,13 @@ export default function Hero() {
         <p className="hero__title">
           <BlurText text={profile.title} as="span" delay={40} startDelay={450} />
         </p>
+        <div className="hero__keywords">
+          {profile.keywords.map((keyword) => (
+            <span className="tag" key={keyword}>
+              {keyword}
+            </span>
+          ))}
+        </div>
         <p className="hero__bio">{profile.bio}</p>
         <div className="hero__cta">
           <a href="#parcours" className="btn btn--primary">
@@ -22,6 +29,9 @@ export default function Hero() {
           </a>
           <a href="#contact" className="btn btn--ghost">
             Me contacter
+          </a>
+          <a href="/eliot-bedel-cv.pdf" className="btn btn--ghost" download>
+            Télécharger le CV
           </a>
         </div>
       </div>

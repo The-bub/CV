@@ -43,6 +43,13 @@ a {
   text-decoration: none;
 }
 
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 ul {
   margin: 0;
   padding: 0;
@@ -218,6 +225,14 @@ p {
   color: var(--accent);
   font-weight: 500;
   margin-bottom: 28px;
+}
+
+.hero__keywords {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
 }
 
 .hero__bio {
@@ -529,6 +544,32 @@ p {
   color: var(--accent);
 }
 
+.cert-card__status {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: 980px;
+  background: rgba(77, 184, 255, 0.15);
+  border: 1px solid rgba(77, 184, 255, 0.4);
+  color: #4db8ff;
+}
+
+.cert-card__status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4db8ff;
+}
+
 .cert-card__name {
   font-size: 22px;
   font-weight: 700;
@@ -642,6 +683,7 @@ p {
   height: 0;
   pointer-events: none;
   z-index: 50;
+  opacity: 0;
 }
 
 .target-cursor__dot {
@@ -739,4 +781,57 @@ a.contact__item:hover {
 .footer p {
   font-size: 13px;
   color: var(--text-on-dark-dim);
+}
+
+/* -------------------- Print -------------------- */
+@media print {
+  .nav,
+  .hero__scroll,
+  .hero__cta,
+  .target-cursor {
+    display: none !important;
+  }
+
+  * {
+    animation: none !important;
+    transition: none !important;
+    filter: none !important;
+  }
+
+  .hero {
+    min-height: 0;
+    padding: 24px 0;
+  }
+
+  .section,
+  .section--dark {
+    background: #fff !important;
+    color: #000 !important;
+    padding: 24px 0;
+    break-inside: avoid;
+  }
+
+  .section--dark .section__eyebrow,
+  .section--dark .section__title {
+    color: #000 !important;
+  }
+
+  .cert-card,
+  .contact__item {
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #ccc !important;
+  }
+
+  .section__inner {
+    max-width: 100%;
+    padding: 0 16px;
+  }
+
+  .timeline__item,
+  .edu-card,
+  .cert-card,
+  .skill-card {
+    break-inside: avoid;
+  }
 }

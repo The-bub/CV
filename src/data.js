@@ -2,6 +2,7 @@ export const profile = {
   name: "Eliot Bedel",
   title: "Ingénieur Cybersécurité",
   bio: "J'ai piloté une Red Team et mené des tests d'intrusion durant 3 ans, avant de me tourner vers le management du risque IT. Aujourd'hui, j'accompagne l'identification et la maîtrise des risques sur des périmètres applicatifs et des activités critiques, pour offrir une vision 360° du risque cyber. Pour ce faire, j'allie l'expertise technique offensive à une approche stratégique de protection des SI. Je transforme ces connaissances en leviers métiers, via des analyses de risques, des priorisations de vulnérabilités, tout en conseillant sur la conformité et la maturité SSI, afin de traduire la complexité technique en risques business actionnables.",
+  keywords: ["Red Team", "GRC", "EBIOS RM", "ISO 27001"],
   contact: {
     mobile: "06 33 67 85 61",
     email: "eliot.bedel.contact@icloud.com",
@@ -116,6 +117,22 @@ export const certifications = [
     detail:
       "Opération red team multi-domaines : attaques Kerberos, relais NTLM, mouvement latéral et pivoting jusqu'à Domain Admin.",
   },
+  {
+    name: "CISSP",
+    org: "ISC2",
+    fullName: "Certified Information Systems Security Professional",
+    detail:
+      "Référentiel de sécurité de l'information couvrant la gouvernance, la gestion des risques, l'architecture et les opérations de sécurité.",
+    status: "En préparation",
+  },
+  {
+    name: "ISO 27005 Risk Manager",
+    org: "PECB",
+    fullName: "Certified ISO/IEC 27005 Risk Manager",
+    detail:
+      "Méthodologie de gestion des risques liés à la sécurité de l'information selon la norme ISO/IEC 27005 : identification, analyse, évaluation et traitement des risques.",
+    status: "En préparation",
+  },
 ];
 
 export const skills = [
@@ -163,7 +180,6 @@ export const hobbies = {
     "Jeux vidéo compétitif",
     "Bénévole événementiel (BZHack)",
     "Piano",
-    "CISSP",
     "Sécurité IA",
     "Blockchain",
     "Macro-économie",
