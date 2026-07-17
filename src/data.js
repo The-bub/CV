@@ -155,7 +155,7 @@ export const skills = [
   {
     category: "Cloud & Conteneurs",
     items: [
-      "AWS IAM",
+      "Google Cloud Platform",
       "Docker/Kubernetes (breakout, RBAC, abus Kubelet)",
     ],
   },
