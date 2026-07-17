@@ -229,6 +229,7 @@ p {
 
 .hero__keywords {
   font-size: 14px;
+  font-style: italic;
   color: var(--text-dim);
   letter-spacing: 0.01em;
   margin-bottom: 20px;
