@@ -52,9 +52,11 @@ export default function Contact() {
             <span className="contact__label">Adresse</span>
             <span className="contact__value">{contact.address}</span>
           </a>
-          <a className="contact__item cursor-target" href="/eliot-bedel-cv.pdf" download>
-            <span className="contact__label">CV</span>
-            <span className="contact__value">Télécharger le PDF</span>
+        </Reveal>
+
+        <Reveal as="p" className="contact__cv">
+          <a href="/eliot-bedel-cv.pdf" download>
+            Télécharger mon CV (PDF)
           </a>
         </Reveal>
       </div>

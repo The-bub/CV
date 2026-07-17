@@ -771,6 +771,24 @@ a.contact__item:hover {
   word-break: break-word;
 }
 
+.contact__cv {
+  margin-top: 32px;
+  text-align: center;
+}
+
+.contact__cv a {
+  font-size: 14px;
+  color: var(--text-on-dark-dim);
+  border-bottom: 1px solid var(--border-dark);
+  padding-bottom: 2px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.contact__cv a:hover {
+  color: #4db8ff;
+  border-color: #4db8ff;
+}
+
 .footer {
   border-top: 1px solid var(--border-dark);
   padding: 28px 24px;
