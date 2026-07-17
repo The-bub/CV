@@ -22,6 +22,7 @@
   --btn-ghost-hover: #e8e8ed;
   --shadow-color: rgba(0, 0, 0, 0.08);
   --card-hover-ring: transparent;
+  --edu-card-shadow: rgba(0, 0, 0, 0.1);
   --cert-card-bg: var(--bg-dark);
   --max-width: 1080px;
   --radius: 18px;
@@ -46,6 +47,7 @@
   --btn-ghost-hover: #2c2c2e;
   --shadow-color: rgba(0, 0, 0, 0.45);
   --card-hover-ring: rgba(255, 255, 255, 0.1);
+  --edu-card-shadow: rgba(255, 255, 255, 0.18);
   --cert-card-bg: #201f24;
 }
 
@@ -566,7 +568,7 @@ p {
 
 .edu-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 32px var(--shadow-color), 0 0 0 1px var(--card-hover-ring);
+  box-shadow: 0 16px 32px var(--edu-card-shadow), 0 0 0 1px var(--card-hover-ring);
 }
 
 .edu-card__period {
@@ -632,6 +634,13 @@ p {
   padding: 32px;
 }
 
+.cert-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .cert-card__org {
   font-size: 12px;
   font-weight: 600;
@@ -641,9 +650,7 @@ p {
 }
 
 .cert-card__status {
-  position: absolute;
-  top: 28px;
-  right: 28px;
+  flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -688,7 +695,6 @@ p {
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  align-items: start;
   gap: 24px;
   margin-bottom: 64px;
 }

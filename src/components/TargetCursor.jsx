@@ -26,11 +26,6 @@ export default function TargetCursor({
     const bracket = bracketRef.current;
     if (!container || !cursor || !bracket) return undefined;
 
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (prefersReducedMotion) return undefined;
-
     gsap.set(cursor, { opacity: 0, x: 0, y: 0 });
     gsap.set(bracket, { xPercent: -50, yPercent: -50, width: IDLE_SIZE, height: IDLE_SIZE, rotation: 0 });
 

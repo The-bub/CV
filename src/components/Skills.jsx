@@ -26,15 +26,17 @@ export default function Skills() {
                 backgroundColor="var(--cert-card-bg)"
                 glowColor="205 90 65"
                 glowRadius={28}
-                glowIntensity={1.1}
-                edgeSensitivity={35}
-                coneSpread={28}
+                glowIntensity={1.6}
+                edgeSensitivity={50}
+                coneSpread={40}
                 colors={["#0071e3", "#4db8ff", "#38bdf8"]}
               >
-                <span className="cert-card__org">{cert.org}</span>
-                {cert.status && (
-                  <span className="cert-card__status">{cert.status}</span>
-                )}
+                <div className="cert-card__top">
+                  <span className="cert-card__org">{cert.org}</span>
+                  {cert.status && (
+                    <span className="cert-card__status">{cert.status}</span>
+                  )}
+                </div>
                 <h4 className="cert-card__name">{cert.name}</h4>
                 <p className="cert-card__full">{cert.fullName}</p>
                 <p className="cert-card__detail">{cert.detail}</p>
