@@ -139,16 +139,31 @@ export const skills = [
   {
     category: "Red Team",
     items: [
-      "Pentest web (OWASP Top 10, injections SQL, XSS, Burp Suite)",
-      "Exploitation Active Directory (Kerberos, mouvement latéral, BloodHound)",
+      "Pentest web (injections, XSS/SSRF/XXE, CSRF, logique métier, exploitation binaire BOF)",
+      "Active Directory (Kerberoasting, AS-REP Roasting, Pass-the-Hash/Ticket, DCSync, forge de tickets Kerberos, abus ADCS ESC1+, délégation contrainte, BloodHound)",
+      "Outils (Impacket, Rubeus, Mimikatz, Certipy, NetExec/CrackMapExec, PowerView, Responder, Burp Suite)",
     ],
   },
   {
     category: "Blue Team",
     items: [
-      "SOC & Forensic (SIEM Elastic, investigation numérique, analyse de malware)",
-      "Réponse à incident & cyberdéfense (hardening, défense en profondeur, référentiels ANSSI)",
+      "SOC & Forensic (SIEM Splunk/Elastic, EDR, forensic mémoire Volatility, analyse de malware)",
+      "Réponse à incident & gestion de crise (hardening, défense en profondeur, référentiels ANSSI)",
       "Sécurité des identités & cloud (Active Directory, Azure AD, MFA)",
+    ],
+  },
+  {
+    category: "Cloud & Conteneurs",
+    items: [
+      "AWS IAM",
+      "Docker/Kubernetes (breakout, RBAC, abus Kubelet)",
+    ],
+  },
+  {
+    category: "IA/LLM Security",
+    items: [
+      "Red-teaming LLM (jailbreak, data poisoning)",
+      "Référentiel OWASP LLM Top 10",
     ],
   },
   {
@@ -180,7 +195,6 @@ export const hobbies = {
     "Jeux vidéo compétitif",
     "Bénévole événementiel (BZHack)",
     "Piano",
-    "Sécurité IA",
     "Blockchain",
     "Macro-économie",
   ],
