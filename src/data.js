@@ -186,6 +186,22 @@ export const skills = [
       "Sauvegarde immuable",
     ],
   },
+  {
+    category: "Pilotage & Gestion de projet",
+    items: [
+      "Pilotage de centres de services (planification, gestion de charge, reporting)",
+      "Chefferie de projet & gestion de programmes",
+      "Définition et suivi de KPI sécurité (tableaux de bord, indicateurs de conformité et de remédiation)",
+    ],
+  },
+  {
+    category: "Communication & Soft Skills",
+    items: [
+      "Vulgarisation technique auprès de publics non-experts (COMEX, métiers)",
+      "Présentation de résultats d'audit et d'analyses de risques",
+      "Travail transverse avec les équipes techniques et métier",
+    ],
+  },
 ];
 
 export const hobbies = {
