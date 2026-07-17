@@ -282,6 +282,22 @@ p {
   transform: translateY(-1px);
 }
 
+.hero__pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text-dim);
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.hero__pdf-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 .hero__scroll {
   position: absolute;
   bottom: 36px;
@@ -670,6 +686,13 @@ p {
   color: var(--text-dim);
 }
 
+.tag--accent {
+  background: rgba(0, 113, 227, 0.08);
+  border-color: rgba(0, 113, 227, 0.25);
+  color: var(--accent);
+  font-weight: 500;
+}
+
 /* -------------------- Contact -------------------- */
 #contact {
   position: relative;
@@ -788,6 +811,7 @@ a.contact__item:hover {
   .nav,
   .hero__scroll,
   .hero__cta,
+  .hero__pdf-link,
   .target-cursor {
     display: none !important;
   }

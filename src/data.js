@@ -154,7 +154,7 @@ export const skills = [
   {
     category: "GRC",
     items: [
-      "Analyse de risques (EBIOS Risk Manager, ISO 27005)",
+      "Analyse de risques (méthode EBIOS Risk Manager)",
       "Système de management de la sécurité (ISO 27001/27002)",
       "Continuité d'activité (ISO 22301, BIA, PCA/PRA)",
       "Conformité réglementaire (RGPD, CNIL)",
