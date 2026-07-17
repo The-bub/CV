@@ -114,6 +114,11 @@ p {
   color: var(--text);
 }
 
+.nav__cv-link {
+  padding-left: 16px;
+  border-left: 1px solid var(--border);
+}
+
 .nav__toggle {
   display: none;
   width: 32px;
@@ -155,12 +160,19 @@ p {
   }
 
   .nav__links--open {
-    max-height: 320px;
+    max-height: 400px;
   }
 
   .nav__links a {
     padding: 16px 0;
     font-size: 15px;
+  }
+
+  .nav__cv-link {
+    padding-left: 0;
+    padding-top: 16px;
+    border-left: none;
+    border-top: 1px solid var(--border);
   }
 }
 
@@ -773,7 +785,7 @@ a.contact__item:hover {
 }
 
 .contact__cv {
-  margin-top: 32px;
+  margin-top: 48px;
   text-align: center;
 }
 
