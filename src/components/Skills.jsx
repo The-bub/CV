@@ -1,5 +1,6 @@
 import { certifications, skills, hobbies } from "../data";
 import Reveal from "./Reveal";
+import BorderGlow from "./BorderGlow";
 import { onSpotlightMove } from "../lib/spotlight";
 
 export default function Skills() {
@@ -18,15 +19,26 @@ export default function Skills() {
         </Reveal>
         <div className="certs-grid">
           {certifications.map((cert) => (
-            <Reveal as="article" className="cert-card" key={cert.name} onMouseMove={onSpotlightMove}>
-              <span className="card-spotlight" aria-hidden="true" />
-              <span className="cert-card__org">{cert.org}</span>
-              {cert.status && (
-                <span className="cert-card__status">{cert.status}</span>
-              )}
-              <h4 className="cert-card__name">{cert.name}</h4>
-              <p className="cert-card__full">{cert.fullName}</p>
-              <p className="cert-card__detail">{cert.detail}</p>
+            <Reveal className="cert-card-wrap" key={cert.name}>
+              <BorderGlow
+                className="cert-card"
+                borderRadius={18}
+                backgroundColor="var(--cert-card-bg)"
+                glowColor="205 90 65"
+                glowRadius={28}
+                glowIntensity={1.1}
+                edgeSensitivity={35}
+                coneSpread={28}
+                colors={["#0071e3", "#4db8ff", "#38bdf8"]}
+              >
+                <span className="cert-card__org">{cert.org}</span>
+                {cert.status && (
+                  <span className="cert-card__status">{cert.status}</span>
+                )}
+                <h4 className="cert-card__name">{cert.name}</h4>
+                <p className="cert-card__full">{cert.fullName}</p>
+                <p className="cert-card__detail">{cert.detail}</p>
+              </BorderGlow>
             </Reveal>
           ))}
         </div>
