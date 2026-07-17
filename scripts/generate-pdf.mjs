@@ -106,13 +106,6 @@ const styles = StyleSheet.create({
     color: TEXT_DIM,
     lineHeight: 1.4,
   },
-  twoCol: {
-    flexDirection: "row",
-    gap: 24,
-  },
-  col: {
-    flex: 1,
-  },
   skillCategory: {
     fontSize: 9,
     fontFamily: "Helvetica-Bold",
@@ -218,34 +211,14 @@ function CertificationsSection() {
 function SkillsSection() {
   return h(
     View,
-    { style: styles.section, wrap: false },
+    { style: styles.section },
     h(Text, { style: styles.sectionTitle }, "Compétences"),
-    h(
-      View,
-      { style: styles.twoCol },
+    skills.map((group, i) =>
       h(
         View,
-        { style: styles.col },
-        skills.slice(0, 2).map((group, i) =>
-          h(
-            View,
-            { key: i, style: { marginBottom: 8 } },
-            h(Text, { style: styles.skillCategory }, group.category),
-            bulletList(group.items),
-          ),
-        ),
-      ),
-      h(
-        View,
-        { style: styles.col },
-        skills.slice(2).map((group, i) =>
-          h(
-            View,
-            { key: i, style: { marginBottom: 8 } },
-            h(Text, { style: styles.skillCategory }, group.category),
-            bulletList(group.items),
-          ),
-        ),
+        { key: i, style: { marginBottom: 8 }, wrap: false },
+        h(Text, { style: styles.skillCategory }, group.category),
+        bulletList(group.items),
       ),
     ),
   );
