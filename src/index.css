@@ -636,9 +636,10 @@ p {
 
 .cert-card__top {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px 12px;
 }
 
 .cert-card__org {
