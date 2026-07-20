@@ -13,22 +13,31 @@ export default function Experience() {
           <BlurText text="Expériences professionnelles" as="span" delay={30} />
         </h2>
 
-        <div className="timeline">
-          {experiences.map((exp, i) => (
-            <Reveal as="article" className="timeline__item" key={i}>
-              <div className="timeline__marker" />
-              <div className="timeline__content">
-                <span className="timeline__period">{exp.period}</span>
-                <h3 className="timeline__role">{exp.role}</h3>
-                <p className="timeline__company">{exp.company}</p>
-                <ul className="timeline__list">
-                  {exp.items.map((item, j) => (
-                    <li key={j}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            </Reveal>
-          ))}
+        <div className="dossier">
+          {experiences.map((exp, i) => {
+            const isCurrent = exp.period.toLowerCase().startsWith("depuis");
+            return (
+              <Reveal as="article" className="dossier__item" key={i}>
+                <span className="dossier__index">{String(i + 1).padStart(2, "0")}</span>
+                <div className="dossier__body">
+                  <div className="dossier__head">
+                    <h3 className="dossier__role">{exp.role}</h3>
+                    <span
+                      className={`dossier__period ${isCurrent ? "dossier__period--current" : ""}`}
+                    >
+                      {exp.period}
+                    </span>
+                  </div>
+                  <p className="dossier__company">{exp.company}</p>
+                  <ul className="dossier__list">
+                    {exp.items.map((item, j) => (
+                      <li key={j}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>

@@ -29,7 +29,8 @@ export default function Nav() {
     <header className={`nav ${scrolled ? "nav--scrolled" : ""}`}>
       <div className="nav__inner">
         <a className="nav__brand" href="#accueil">
-          Eliot Bedel
+          <span className="nav__brand-line1">Eliot</span>
+          <span className="nav__brand-line2">Bedel</span>
         </a>
         <nav className={`nav__links ${open ? "nav__links--open" : ""}`}>
           {LINKS.map((link) => (
@@ -48,7 +49,7 @@ export default function Nav() {
         </nav>
         <button
           type="button"
-          className="theme-toggle"
+          className="icon-btn theme-toggle"
           aria-label={
             theme === "dark" ? "Activer le mode clair" : "Activer le mode sombre"
           }
@@ -67,7 +68,7 @@ export default function Nav() {
         </button>
         <button
           type="button"
-          className="nav__toggle"
+          className="icon-btn nav__toggle"
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}

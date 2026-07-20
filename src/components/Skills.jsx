@@ -22,14 +22,14 @@ export default function Skills() {
             <Reveal className="cert-card-wrap" key={cert.name}>
               <BorderGlow
                 className="cert-card"
-                borderRadius={18}
+                borderRadius={10}
                 backgroundColor="var(--cert-card-bg)"
-                glowColor="205 90 65"
+                glowColor="73 100 60"
                 glowRadius={28}
                 glowIntensity={1.6}
                 edgeSensitivity={50}
                 coneSpread={40}
-                colors={["#0071e3", "#4db8ff", "#38bdf8"]}
+                colors={["#c6ff3d", "#8fcc1f", "#eeffb0"]}
               >
                 <div className="cert-card__top">
                   <span className="cert-card__org">{cert.org}</span>
