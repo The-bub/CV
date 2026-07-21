@@ -14,10 +14,12 @@ export default function Hero() {
       <div className="hero__grid">
         <div className="hero__content">
           <p className="hero__eyebrow">Dossier professionnel — 2026</p>
-          <h1 className="hero__name">
-            <BlurText text="Eliot" as="span" />
-            <br />
-            <BlurText text="Bedel" as="span" delay={40} startDelay={150} />
+          <h1 className="hero__name" aria-label="Eliot Bedel">
+            <span aria-hidden="true">
+              <BlurText text="Eliot" as="span" />
+              <br />
+              <BlurText text="Bedel" as="span" delay={40} startDelay={150} />
+            </span>
           </h1>
           <p className="hero__title">{profile.title}</p>
           <p className="hero__keywords">{profile.keywords.join(" · ")}</p>
