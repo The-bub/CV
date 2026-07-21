@@ -11,8 +11,8 @@ export default function Contact() {
     <section id="contact" className="section section--dark" ref={sectionRef}>
       <TargetCursor
         containerRef={sectionRef}
-        cursorColor="#f3f1e7"
-        cursorColorOnTarget="#c6ff3d"
+        cursorColor="#f2eee4"
+        cursorColorOnTarget="#d98f5e"
       />
       <div className="section__inner section__inner--narrow">
         <Reveal as="p" className="section__eyebrow">

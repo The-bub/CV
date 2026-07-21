@@ -24,12 +24,12 @@ export default function Skills() {
                 className="cert-card"
                 borderRadius={10}
                 backgroundColor="var(--cert-card-bg)"
-                glowColor="73 100 60"
+                glowColor="24 62 61"
                 glowRadius={28}
                 glowIntensity={1.6}
                 edgeSensitivity={50}
                 coneSpread={40}
-                colors={["#c6ff3d", "#8fcc1f", "#eeffb0"]}
+                colors={["#d98f5e", "#b96a3a", "#f0c49c"]}
               >
                 <div className="cert-card__top">
                   <span className="cert-card__org">{cert.org}</span>
