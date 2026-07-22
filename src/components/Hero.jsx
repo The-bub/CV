@@ -1,6 +1,7 @@
 import photo from "../assets/eliot-bedel-2026.jpg";
 import { profile } from "../data";
 import BlurText from "./BlurText";
+import GlareHover from "./GlareHover";
 
 export default function Hero() {
   return (
@@ -50,7 +51,21 @@ export default function Hero() {
         </div>
 
         <div className="hero__photo-panel">
-          <img className="hero__photo" src={photo} alt="Portrait d'Eliot Bedel" />
+          <GlareHover
+            className="hero__photo-glare"
+            width="100%"
+            height="100%"
+            background="transparent"
+            borderColor="transparent"
+            borderRadius="0px"
+            glareColor="#fff4e0"
+            glareOpacity={0.3}
+            glareAngle={-45}
+            glareSize={250}
+            transitionDuration={700}
+          >
+            <img className="hero__photo" src={photo} alt="Portrait d'Eliot Bedel" />
+          </GlareHover>
           <div className="hero__photo-fade" aria-hidden="true" />
           <div className="hero__badge">
             <span className="hero__badge-label">Basé à</span>
