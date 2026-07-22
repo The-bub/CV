@@ -1,7 +1,6 @@
 import photo from "../assets/eliot-bedel-2026.jpg";
 import { profile } from "../data";
 import BlurText from "./BlurText";
-import TiltedCard from "./TiltedCard";
 
 export default function Hero() {
   return (
@@ -51,18 +50,7 @@ export default function Hero() {
         </div>
 
         <div className="hero__photo-panel">
-          <TiltedCard
-            imageSrc={photo}
-            altText="Portrait d'Eliot Bedel"
-            containerWidth="100%"
-            containerHeight="100%"
-            imageWidth="100%"
-            imageHeight="100%"
-            scaleOnHover={1.06}
-            rotateAmplitude={10}
-            showMobileWarning={false}
-            showTooltip={false}
-          />
+          <img className="hero__photo" src={photo} alt="Portrait d'Eliot Bedel" />
           <div className="hero__photo-fade" aria-hidden="true" />
           <div className="hero__badge">
             <span className="hero__badge-label">Basé à</span>
