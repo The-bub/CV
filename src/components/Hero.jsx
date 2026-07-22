@@ -1,4 +1,4 @@
-import photo from "../assets/eliot-bedel-2026.jpg";
+import photo from "../assets/eliot-bedel-2026-v2.jpg";
 import { profile } from "../data";
 import BlurText from "./BlurText";
 
