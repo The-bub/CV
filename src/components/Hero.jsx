@@ -51,6 +51,7 @@ export default function Hero() {
 
         <div className="hero__photo-panel">
           <img className="hero__photo" src={photo} alt="Portrait d'Eliot Bedel" />
+          <div className="hero__photo-grain" aria-hidden="true" />
           <div className="hero__photo-fade" aria-hidden="true" />
           <div className="hero__badge">
             <span className="hero__badge-label">Basé à</span>
