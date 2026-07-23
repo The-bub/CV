@@ -1,82 +1,64 @@
-import { useEffect, useState } from "react";
-import { applyTheme, getPreferredTheme } from "../lib/theme";
+import { useEffect, useRef } from "react";
+import { scrollTo } from "../lib/scroll";
+import { useMagnetic } from "../lib/useMagnetic";
 
 const LINKS = [
-  { href: "#accueil", label: "Accueil" },
-  { href: "#parcours", label: "Parcours" },
-  { href: "#formation", label: "Formation" },
-  { href: "#competences", label: "Compétences" },
-  { href: "#contact", label: "Contact" },
+  { id: "#approche", label: "Approche", hideable: true },
+  { id: "#parcours", label: "Parcours" },
+  { id: "#expertise", label: "Expertise" },
+  { id: "#certifications", label: "Titres", hideable: true },
 ];
 
 export default function Nav() {
-  const [scrolled, setScrolled] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [theme, setTheme] = useState(getPreferredTheme);
+  const navRef = useRef(null);
+  const ctaRef = useMagnetic(0.35);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
+    const onScroll = () => {
+      if (!navRef.current) return;
+      navRef.current.classList.toggle("is-scrolled", window.scrollY > 40);
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
+  const go = (e, id) => {
+    e.preventDefault();
+    scrollTo(id);
+  };
 
   return (
-    <header className={`nav ${scrolled ? "nav--scrolled" : ""}`}>
-      <div className="nav__inner">
-        <a className="nav__brand" href="#accueil">
-          <span className="nav__brand-line1">Eliot</span>
-          <span className="nav__brand-line2">Bedel</span>
-        </a>
-        <nav className={`nav__links ${open ? "nav__links--open" : ""}`}>
-          {LINKS.map((link) => (
-            <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
-              {link.label}
-            </a>
-          ))}
+    <nav className="nav" ref={navRef}>
+      <a
+        className="nav__mark"
+        href="#accueil"
+        onClick={(e) => go(e, "#accueil")}
+        aria-label="Eliot Bedel — accueil"
+      >
+        <b />
+        Eliot Bedel
+      </a>
+      <div className="nav__links">
+        {LINKS.map((l) => (
           <a
-            className="nav__cv-link"
-            href="/eliot-bedel-cv.pdf"
-            download
-            onClick={() => setOpen(false)}
+            key={l.id}
+            href={l.id}
+            onClick={(e) => go(e, l.id)}
+            className={l.hideable ? "nav__hideable" : undefined}
           >
-            CV (PDF)
+            {l.label}
           </a>
-        </nav>
-        <button
-          type="button"
-          className="icon-btn theme-toggle"
-          aria-label={
-            theme === "dark" ? "Activer le mode clair" : "Activer le mode sombre"
-          }
-          onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+        ))}
+        <a
+          ref={ctaRef}
+          href="#contact"
+          onClick={(e) => go(e, "#contact")}
+          className="btn"
         >
-          {theme === "dark" ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-            </svg>
-          )}
-        </button>
-        <button
-          type="button"
-          className="icon-btn nav__toggle"
-          aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-        >
-          <span />
-          <span />
-        </button>
+          Contact
+        </a>
       </div>
-    </header>
+    </nav>
   );
 }

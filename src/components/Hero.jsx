@@ -1,68 +1,88 @@
-import photo from "../assets/eliot-bedel-2026-v2.jpg";
+import { useLayoutEffect, useRef } from "react";
+import { gsap, prefersReducedMotion } from "../lib/gsap";
 import { profile } from "../data";
-import BlurText from "./BlurText";
+import { scrollTo } from "../lib/scroll";
 
-export default function Hero() {
+export default function Hero({ ready }) {
+  const rootRef = useRef(null);
+
+  useLayoutEffect(() => {
+    if (prefersReducedMotion()) return;
+    const el = rootRef.current;
+    if (!el) return;
+
+    const lines = el.querySelectorAll(".hero__title .line > span");
+    const ins = el.querySelectorAll("[data-in]");
+
+    // Before the loader hands over, keep the intro hidden (no flash).
+    if (!ready) {
+      gsap.set(lines, { yPercent: 115 });
+      gsap.set(ins, { opacity: 0, y: 24 });
+      return;
+    }
+
+    const tl = gsap.timeline({ delay: 0.15 });
+    tl.to(lines, {
+      yPercent: 0,
+      duration: 1.1,
+      ease: "power4.out",
+      stagger: 0.09,
+    });
+    tl.to(
+      ins,
+      { opacity: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.08 },
+      "-=0.6",
+    );
+    return () => tl.kill();
+  }, [ready]);
+
   return (
-    <section id="accueil" className="hero">
-      <svg className="hero__decor" viewBox="0 0 1200 800" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M-50 620 C 250 520, 450 720, 750 560 S 1150 480, 1260 600" fill="none" stroke="currentColor" strokeWidth="1" />
-        <path d="M-50 700 C 300 640, 500 800, 820 660 S 1200 600, 1300 700" fill="none" stroke="currentColor" strokeWidth="1" />
-        <path d="M900 -40 C 980 120, 860 220, 1000 340" fill="none" stroke="currentColor" strokeWidth="1" />
-      </svg>
+    <section className="hero" id="accueil" ref={rootRef}>
+      <div className="hero__wrap">
+        <div className="hero__topline" data-in>
+          <span className="meta">Eliot Bedel — Portfolio ’26</span>
+          <span className="meta">Nantes · France — Disponible</span>
+        </div>
 
-      <div className="hero__grid">
-        <div className="hero__content">
-          <p className="hero__eyebrow">Dossier professionnel — 2026</p>
-          <h1 className="hero__name" aria-label="Eliot Bedel">
-            <span aria-hidden="true">
-              <BlurText text="Eliot" as="span" />
-              <br />
-              <BlurText text="Bedel" as="span" delay={40} startDelay={150} />
+        <h1 className="hero__title">
+          <span className="line">
+            <span>Ingénieur</span>
+          </span>
+          <span className="line">
+            <span>
+              cyber<span className="thin">sécurité</span>
             </span>
-          </h1>
-          <p className="hero__title">{profile.title}</p>
-          <p className="hero__keywords">{profile.keywords.join(" · ")}</p>
-          <p className="hero__bio">{profile.bio}</p>
-          <div className="hero__cta">
-            <a href="#parcours" className="btn btn--primary">
-              Voir le parcours
-            </a>
-            <a href="#contact" className="btn btn--ghost">
-              Me contacter
-            </a>
-          </div>
+          </span>
+        </h1>
 
-          <div className="hero__stats">
-            <div className="hero__stat">
-              <span className="hero__stat-value">9 ans</span>
-              <span className="hero__stat-label">IT &amp; cybersécurité</span>
-            </div>
-            <div className="hero__stat">
-              <span className="hero__stat-value">3 ans</span>
-              <span className="hero__stat-label">Pilotage Red Team &amp; pentest</span>
-            </div>
-            <div className="hero__stat">
-              <span className="hero__stat-value">2e</span>
-              <span className="hero__stat-label">CTF NetWars London</span>
+        <div className="hero__lower">
+          <p className="hero__lead" data-in>
+            J'extrais le <span className="serif">signal</span> du bruit — je
+            traduis la complexité technique en risques métier actionnables, de
+            l'offensive à la gouvernance.
+          </p>
+          <div className="hero__aside" data-in>
+            <span className="meta">Champs d'expertise</span>
+            <div className="hero__keywords">
+              {profile.keywords.map((k) => (
+                <span className="kw" key={k}>
+                  {k}
+                </span>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="hero__photo-panel">
-          <img className="hero__photo" src={photo} alt="Portrait d'Eliot Bedel" />
-          <div className="hero__photo-grain" aria-hidden="true" />
-          <div className="hero__photo-fade" aria-hidden="true" />
-          <div className="hero__badge">
-            <span className="hero__badge-label">Basé à</span>
-            <span className="hero__badge-value">{profile.contact.address}</span>
-          </div>
-        </div>
+        <button
+          className="hero__scroll"
+          data-in
+          onClick={() => scrollTo("#approche")}
+          aria-label="Défiler vers l'approche"
+        >
+          <span className="line-y" />
+          <span className="meta">Défiler</span>
+        </button>
       </div>
-
-      <a className="hero__scroll" href="#parcours" aria-label="Défiler vers le parcours">
-        <span />
-      </a>
     </section>
   );
 }
