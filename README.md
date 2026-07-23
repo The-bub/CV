@@ -7,8 +7,9 @@ Site en ligne : [the-bub.github.io/CV](https://the-bub.github.io/CV/)
 ## Stack
 
 - React 19 + Vite.
-- CSS pur (pas de framework CSS).
-- [`motion`](https://motion.dev) et [`gsap`](https://gsap.com) pour les animations.
+- CSS pur (pas de framework CSS), palette et échelle typographique pilotées par variables CSS (`src/index.css`).
+- [`gsap`](https://gsap.com) (ScrollTrigger, ScrollSmoother, SplitText) pour le smooth scroll et la chorégraphie d'animations ; [`motion`](https://motion.dev) pour les apparitions simples au scroll.
+- [`three`](https://threejs.org) pour la pièce 3D du hero (`src/three/InstrumentField.jsx`), avec shaders GLSL faits main — chargée en asynchrone (`React.lazy`) pour ne pas alourdir le chargement initial.
 - Oxlint pour le lint.
 
 ## Lancer le projet en local
@@ -47,7 +48,7 @@ Le fichier exporte plusieurs objets :
 
 Chaque export est un tableau ou un objet simple : pour ajouter une expérience, dupliquer un bloc `{ role, company, period, items }` dans le tableau `experiences` ; pour ajouter une compétence, ajouter une ligne dans le tableau `items` de la catégorie concernée ; etc. Aucune autre modification n'est nécessaire, les listes s'affichent automatiquement.
 
-**Photo** : remplacer le fichier `src/assets/eliot-bedel.jpg` (le nom de fichier n'a pas besoin de changer, il est importé par [`Hero.jsx`](src/components/Hero.jsx)).
+**Photo** : remplacer le fichier importé dans [`Hero.jsx`](src/components/Hero.jsx) (`src/assets/eliot-bedel-2026-v2.jpg`).
 
 **Favicon** : `public/favicon.svg`.
 
@@ -71,9 +72,10 @@ cv-site/
     ├── App.jsx / main.jsx
     ├── index.css
     ├── assets/                    # photo
-    ├── components/                # Hero, Nav, Experience, Education, Skills, Contact, Reveal, BlurText, TargetCursor
-    ├── hooks/
-    └── lib/
+    ├── components/                # Hero, Nav, Experience, Education, Skills, Contact,
+    │                               # Preloader, GrainOverlay, Cursor, SmoothScroll, Reveal, GsapReveal, BlurText, BorderGlow
+    ├── three/                     # scène 3D du hero (InstrumentField, shaders GLSL, fallback statique)
+    └── lib/                       # thème clair/sombre, config GSAP, curseur magnétique, spotlight
 ```
 
 ## Licence

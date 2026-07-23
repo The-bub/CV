@@ -1,7 +1,18 @@
 import { certifications, skills, hobbies } from "../data";
 import Reveal from "./Reveal";
+import GsapReveal from "./GsapReveal";
 import BorderGlow from "./BorderGlow";
 import { onSpotlightMove } from "../lib/spotlight";
+
+const NEUTRAL_GLOW = {
+  glowColor: "236 233 228",
+  colors: ["#ece9e4", "#c8c4bc", "#8d8a84"],
+};
+
+const SIGNAL_GLOW = {
+  glowColor: "207 90 63",
+  colors: ["#cf5a3f", "#e2755a", "#8d8a84"],
+};
 
 export default function Skills() {
   return (
@@ -10,39 +21,42 @@ export default function Skills() {
         <Reveal as="p" className="section__eyebrow">
           Compétences
         </Reveal>
-        <Reveal as="h2" className="section__title">
-          Certifications &amp; compétences
-        </Reveal>
+        <h2 className="section__title">
+          <GsapReveal>Certifications &amp; compétences</GsapReveal>
+        </h2>
 
         <Reveal as="h3" className="skills-subtitle">
           Certifications
         </Reveal>
         <div className="certs-grid">
-          {certifications.map((cert) => (
-            <Reveal className="cert-card-wrap" key={cert.name}>
-              <BorderGlow
-                className="cert-card"
-                borderRadius={10}
-                backgroundColor="var(--cert-card-bg)"
-                glowColor="24 62 61"
-                glowRadius={28}
-                glowIntensity={1.6}
-                edgeSensitivity={50}
-                coneSpread={40}
-                colors={["#d98f5e", "#b96a3a", "#f0c49c"]}
-              >
-                <div className="cert-card__top">
-                  <span className="cert-card__org">{cert.org}</span>
-                  {cert.status && (
-                    <span className="cert-card__status">{cert.status}</span>
-                  )}
-                </div>
-                <h4 className="cert-card__name">{cert.name}</h4>
-                <p className="cert-card__full">{cert.fullName}</p>
-                <p className="cert-card__detail">{cert.detail}</p>
-              </BorderGlow>
-            </Reveal>
-          ))}
+          {certifications.map((cert) => {
+            const glow = cert.status ? SIGNAL_GLOW : NEUTRAL_GLOW;
+            return (
+              <Reveal className="cert-card-wrap" key={cert.name}>
+                <BorderGlow
+                  className="cert-card"
+                  borderRadius={0}
+                  backgroundColor="var(--cert-card-bg)"
+                  glowColor={glow.glowColor}
+                  glowRadius={26}
+                  glowIntensity={1.4}
+                  edgeSensitivity={50}
+                  coneSpread={40}
+                  colors={glow.colors}
+                >
+                  <div className="cert-card__top">
+                    <span className="cert-card__org">{cert.org}</span>
+                    {cert.status && (
+                      <span className="cert-card__status">{cert.status}</span>
+                    )}
+                  </div>
+                  <h4 className="cert-card__name">{cert.name}</h4>
+                  <p className="cert-card__full">{cert.fullName}</p>
+                  <p className="cert-card__detail">{cert.detail}</p>
+                </BorderGlow>
+              </Reveal>
+            );
+          })}
         </div>
 
         <Reveal as="h3" className="skills-subtitle">

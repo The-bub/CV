@@ -1,5 +1,6 @@
 import { education } from "../data";
 import Reveal from "./Reveal";
+import GsapReveal from "./GsapReveal";
 
 export default function Education() {
   return (
@@ -8,9 +9,9 @@ export default function Education() {
         <Reveal as="p" className="section__eyebrow">
           Formation
         </Reveal>
-        <Reveal as="h2" className="section__title">
-          Un parcours par alternance
-        </Reveal>
+        <h2 className="section__title">
+          <GsapReveal>Un parcours par alternance</GsapReveal>
+        </h2>
 
         <div className="edu-grid">
           {education.map((ed, i) => (

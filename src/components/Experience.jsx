@@ -1,8 +1,32 @@
+import { useEffect, useRef } from "react";
 import { experiences } from "../data";
 import Reveal from "./Reveal";
-import BlurText from "./BlurText";
+import GsapReveal from "./GsapReveal";
+import { gsap, registerGsap, ScrollTrigger } from "../lib/gsapSetup";
 
 export default function Experience() {
+  const dossierRef = useRef(null);
+  const railFillRef = useRef(null);
+
+  useEffect(() => {
+    registerGsap();
+    const dossier = dossierRef.current;
+    const fill = railFillRef.current;
+    if (!dossier || !fill) return undefined;
+
+    const trigger = ScrollTrigger.create({
+      trigger: dossier,
+      start: "top 60%",
+      end: "bottom 60%",
+      scrub: true,
+      onUpdate: (self) => {
+        gsap.set(fill, { scaleY: self.progress });
+      },
+    });
+
+    return () => trigger.kill();
+  }, []);
+
   return (
     <section id="parcours" className="section">
       <div className="section__inner">
@@ -10,10 +34,13 @@ export default function Experience() {
           Parcours
         </Reveal>
         <h2 className="section__title">
-          <BlurText text="Expériences professionnelles" as="span" delay={30} />
+          <GsapReveal>Expériences professionnelles</GsapReveal>
         </h2>
 
-        <div className="dossier">
+        <div className="dossier" ref={dossierRef}>
+          <div className="dossier__rail" aria-hidden="true">
+            <div className="dossier__rail-fill" ref={railFillRef} />
+          </div>
           {experiences.map((exp, i) => {
             const isCurrent = exp.period.toLowerCase().startsWith("depuis");
             return (

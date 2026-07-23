@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { applyTheme, getPreferredTheme } from "../lib/theme";
+import { gsap, registerGsap, ScrollTrigger, scrollToHash } from "../lib/gsapSetup";
 
 const LINKS = [
   { href: "#accueil", label: "Accueil" },
@@ -13,6 +14,7 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState(getPreferredTheme);
+  const progressRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -25,21 +27,51 @@ export default function Nav() {
     applyTheme(theme);
   }, [theme]);
 
+  useEffect(() => {
+    registerGsap();
+    const trigger = ScrollTrigger.create({
+      trigger: document.body,
+      start: "top top",
+      end: "bottom bottom",
+      scrub: true,
+      onUpdate: (self) => {
+        if (progressRef.current) {
+          gsap.set(progressRef.current, { scaleX: self.progress });
+        }
+      },
+    });
+    return () => trigger.kill();
+  }, []);
+
+  const handleNavClick = (e, href) => {
+    setOpen(false);
+    scrollToHash(e, href);
+  };
+
   return (
     <header className={`nav ${scrolled ? "nav--scrolled" : ""}`}>
       <div className="nav__inner">
-        <a className="nav__brand" href="#accueil">
+        <a
+          className="nav__brand cursor-target"
+          href="#accueil"
+          onClick={(e) => handleNavClick(e, "#accueil")}
+        >
           <span className="nav__brand-line1">Eliot</span>
           <span className="nav__brand-line2">Bedel</span>
         </a>
         <nav className={`nav__links ${open ? "nav__links--open" : ""}`}>
           {LINKS.map((link) => (
-            <a key={link.href} href={link.href} onClick={() => setOpen(false)}>
+            <a
+              key={link.href}
+              className="cursor-target"
+              href={link.href}
+              onClick={(e) => handleNavClick(e, link.href)}
+            >
               {link.label}
             </a>
           ))}
           <a
-            className="nav__cv-link"
+            className="nav__cv-link cursor-target"
             href="/eliot-bedel-cv.pdf"
             download
             onClick={() => setOpen(false)}
@@ -49,7 +81,7 @@ export default function Nav() {
         </nav>
         <button
           type="button"
-          className="icon-btn theme-toggle"
+          className="icon-btn theme-toggle cursor-target"
           aria-label={
             theme === "dark" ? "Activer le mode clair" : "Activer le mode sombre"
           }
@@ -68,7 +100,7 @@ export default function Nav() {
         </button>
         <button
           type="button"
-          className="icon-btn nav__toggle"
+          className="icon-btn nav__toggle cursor-target"
           aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
@@ -76,6 +108,7 @@ export default function Nav() {
           <span />
           <span />
         </button>
+        <div className="nav__progress" ref={progressRef} aria-hidden="true" />
       </div>
     </header>
   );

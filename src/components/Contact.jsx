@@ -1,26 +1,19 @@
-import { useRef } from "react";
 import { profile } from "../data";
 import Reveal from "./Reveal";
-import TargetCursor from "./TargetCursor";
+import GsapReveal from "./GsapReveal";
 
 export default function Contact() {
   const { contact } = profile;
-  const sectionRef = useRef(null);
 
   return (
-    <section id="contact" className="section section--dark" ref={sectionRef}>
-      <TargetCursor
-        containerRef={sectionRef}
-        cursorColor="#f2eee4"
-        cursorColorOnTarget="#d98f5e"
-      />
+    <section id="contact" className="section section--dark">
       <div className="section__inner section__inner--narrow">
         <Reveal as="p" className="section__eyebrow">
           Contact
         </Reveal>
-        <Reveal as="h2" className="section__title">
-          Discutons de votre prochain projet
-        </Reveal>
+        <h2 className="section__title">
+          <GsapReveal>Discutons de votre prochain projet</GsapReveal>
+        </h2>
         <Reveal as="p" className="contact__lede">
           Disponible pour échanger sur vos enjeux de gouvernance, de gestion des
           risques ou de sécurité offensive.
@@ -59,7 +52,7 @@ export default function Contact() {
         </Reveal>
 
         <Reveal as="p" className="contact__cv">
-          <a href="/eliot-bedel-cv.pdf" download>
+          <a className="cursor-target" href="/eliot-bedel-cv.pdf" download>
             Télécharger mon CV (PDF)
           </a>
         </Reveal>
