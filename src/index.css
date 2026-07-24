@@ -1084,23 +1084,24 @@ main {
   white-space: nowrap;
   margin-top: 0.35em;
   font-family: var(--f-mono);
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
-  color: var(--bone-2);
-  border: 1px solid var(--line-2);
+  color: var(--signal);
+  border: 1px solid var(--signal);
+  background: color-mix(in srgb, var(--signal) 14%, transparent);
   border-radius: 100px;
-  padding: 0.4em 0.75em 0.4em 0.65em;
+  padding: 0.42em 0.8em 0.42em 0.68em;
 }
 .cert__status::before {
   content: "";
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--ember);
-  box-shadow: 0 0 6px var(--ember);
-  animation: pulse 3s var(--ease-in-out) infinite;
+  background: var(--signal);
+  box-shadow: 0 0 8px var(--signal);
+  animation: pulse 2.4s var(--ease-in-out) infinite;
 }
 
 /* ============================================================================

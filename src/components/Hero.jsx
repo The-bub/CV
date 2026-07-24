@@ -6,9 +6,9 @@ import portrait from "../assets/eliot-bedel-2026-v2.jpg";
 const CV_URL = "/eliot-bedel-cv.pdf";
 
 const STATS = [
+  { k: "9", v: "ans IT & cybersécurité" },
   { k: "3", v: "ans en sécurité offensive" },
   { k: "2×", v: "2ᵉ place en CTF" },
-  { k: "RNCP 7", v: "Expert en sécurité digitale" },
 ];
 
 export default function Hero({ ready }) {
