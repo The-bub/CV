@@ -1414,24 +1414,7 @@ main {
   transform: translateY(28px);
 }
 
-/* ============================================================================
-   REDUCED MOTION
-   ============================================================================ */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-  }
-  [data-reveal] {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .hero__title .line > span,
-  .manifesto__text .word {
-    transform: none !important;
-    opacity: 1 !important;
-  }
-}
+/* Pas de bloc @media (prefers-reduced-motion) : l'expérience animée est servie
+   à toutes les machines (voir HONOUR_REDUCED_MOTION dans src/lib/gsap.js).
+   Repasser HONOUR_REDUCED_MOTION à true implique de réintroduire ici les
+   états finaux forcés pour le hero / le manifeste. */

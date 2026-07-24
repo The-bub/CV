@@ -42,9 +42,8 @@ export default function Field({ revealRef }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    // Le champ anime sur toutes les machines (voir HONOUR_REDUCED_MOTION dans lib/gsap.js).
+    const reduced = false;
 
     let renderer;
     try {
