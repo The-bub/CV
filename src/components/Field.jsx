@@ -72,6 +72,7 @@ export default function Field({ revealRef }) {
       uMouseForce: { value: 0 },
       uReveal: { value: 0 },
       uScroll: { value: 0 },
+      uFlow: { value: 0 },
       uReduced: { value: reduced ? 1 : 0 },
       INK_DEEP: { value: new Vector3() },
       INK_WARM: { value: new Vector3() },
@@ -137,12 +138,20 @@ export default function Field({ revealRef }) {
     let raf;
     let running = true;
     const start = performance.now();
+    let lastNow = start;
     let scrollSmooth = 0;
+    let flow = 0;
+    const smoothstep = (a, b, x) => {
+      const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
+      return t * t * (3 - 2 * t);
+    };
 
     const render = (now) => {
       raf = requestAnimationFrame(render);
       if (!running) return;
 
+      const dt = Math.min((now - lastNow) / 1000, 0.05); // clamp after tab idle
+      lastNow = now;
       uniforms.uTime.value = (now - start) / 1000;
 
       smooth.lerp(target, 0.08);
@@ -154,6 +163,10 @@ export default function Field({ revealRef }) {
 
       scrollSmooth += (scrollProgress() - scrollSmooth) * 0.1;
       uniforms.uScroll.value = scrollSmooth;
+
+      // Flow advances only near the hero — the field freezes as you scroll on.
+      flow += dt * 0.02 * (1 - smoothstep(0.02, 0.14, scrollSmooth));
+      uniforms.uFlow.value = flow;
 
       renderer.render(scene, camera);
 

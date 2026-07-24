@@ -28,6 +28,24 @@ function App() {
     if (ready) document.body.classList.remove("is-loading");
   }, [ready]);
 
+  // Chapter cuts: draw each section's accent rule when it scrolls into view.
+  useEffect(() => {
+    const sections = document.querySelectorAll("main .section");
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("is-in");
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.06 },
+    );
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
+  }, []);
+
   const handleComplete = useCallback(() => setReady(true), []);
 
   return (

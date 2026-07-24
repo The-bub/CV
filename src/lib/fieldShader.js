@@ -24,6 +24,7 @@ export const fragmentShader = /* glsl */ `
   uniform float uMouseForce;// 0..1, decays after movement
   uniform float uReveal;    // 0 = chaotic (loading) -> 1 = settled
   uniform float uScroll;    // 0..1 scroll progress
+  uniform float uFlow;      // animation phase — advances only near the hero (JS-driven)
   uniform float uReduced;   // 1 = reduced motion
 
   // Palette — fed from CSS custom properties so the field follows the theme
@@ -91,16 +92,20 @@ export const fragmentShader = /* glsl */ `
 
     float t = uTime * (uReduced > 0.5 ? 0.0 : 1.0);
 
+    // The interactive motion lives in the hero; it eases out once you scroll on,
+    // so the fixed field stops "tangage" behind the reading content.
+    float heroZone = 1.0 - smoothstep(0.02, 0.16, uScroll);
+
     // Cursor ripple: push the field outward from the pointer, self-healing
     vec2 m = uMouse; m.x *= aspect;
     vec2 toM = p - m;
     float md = length(toM);
-    float ripple = uMouseForce * exp(-md * 5.5);
-    p += normalize(toM + 1e-4) * ripple * 0.09;
+    float ripple = uMouseForce * exp(-md * 5.5) * heroZone;
+    p += normalize(toM + 1e-4) * ripple * 0.06;
 
     // Turbulence eases as the site reveals (loader -> hero)
     float chaos = mix(1.25, 1.0, uReveal);
-    float flow = t * 0.04;
+    float flow = uFlow; // JS freezes this past the hero (no jump)
 
     // Domain warping -> organic "risk terrain" (low frequency = large, calm contours)
     vec2 q = vec2(fbm(p * 1.05 + vec2(0.0, flow)),
@@ -122,8 +127,8 @@ export const fragmentShader = /* glsl */ `
     vec3 base = mix(SHADOW, INK_DEEP, relief);
     base = mix(base, INK_WARM, smoothstep(0.72, 1.0, h) * 0.45);
 
-    // Signal glow — faint by default, blooms around the cursor
-    float near = exp(-md * 3.2) * uMouseForce;
+    // Signal glow — faint by default, blooms around the cursor (hero only)
+    float near = exp(-md * 3.2) * uMouseForce * heroZone;
     float energy = (0.22 + 0.17 * relief) * mix(0.5, 0.92, uReveal);
     energy += near * 0.8;
     vec3 lineColor = mix(SIGNAL, EMBER, relief * 0.35 + near * 0.6);
@@ -145,6 +150,8 @@ export const fragmentShader = /* glsl */ `
 
     // Global reveal fade + hold it as a quiet background so text stays legible
     col *= mix(0.16, 0.6, smoothstep(0.0, 1.0, uReveal));
+    // Recede further behind the reading content once past the hero
+    col *= mix(1.0, 0.62, smoothstep(0.06, 0.4, uScroll));
 
     gl_FragColor = vec4(col, 1.0);
   }
