@@ -126,7 +126,7 @@ export default function Loader({ onComplete, revealRef }) {
     <div className="loader" ref={rootRef}>
       <div className="loader__center" ref={centerRef}>
         <div className="loader__eyebrow">
-          <span>Cartographie du risque — Portfolio ’26</span>
+          <span>Cartographie du risque · Portfolio 2026</span>
         </div>
         <div className="loader__word" ref={nameRef} aria-label={NAME}>
           {NAME.split("").map((c, i) => (
@@ -145,7 +145,7 @@ export default function Loader({ onComplete, revealRef }) {
           <sup>%</sup>
         </div>
         <div className="loader__meta meta">
-          Nantes — France
+          Nantes, France
           <br />
           47.2184° N / 1.5536° W
         </div>

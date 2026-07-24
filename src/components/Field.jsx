@@ -7,8 +7,28 @@ import {
   ShaderMaterial,
   Mesh,
   Vector2,
+  Vector3,
 } from "three";
 import { vertexShader, fragmentShader } from "../lib/fieldShader";
+
+// Field colours are read from the active palette's CSS custom properties so the
+// background follows the theme (vermillon / sapin / platine).
+const FIELD_VARS = {
+  INK_DEEP: "--ink",
+  INK_WARM: "--ink-3",
+  SHADOW: "--field-shadow",
+  SIGNAL: "--signal",
+  EMBER: "--ember",
+};
+
+// Parse "#rrggbb" / "#rgb" into raw sRGB 0..1 (no colour-management shift).
+function hexToRgb(hex) {
+  let h = hex.replace("#", "").trim();
+  if (h.length === 3)
+    h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  const n = parseInt(h, 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
 
 /**
  * Full-screen generative background. `revealRef` is a ref holding a 0..1
@@ -54,7 +74,28 @@ export default function Field({ revealRef }) {
       uReveal: { value: 0 },
       uScroll: { value: 0 },
       uReduced: { value: reduced ? 1 : 0 },
+      INK_DEEP: { value: new Vector3() },
+      INK_WARM: { value: new Vector3() },
+      SHADOW: { value: new Vector3() },
+      SIGNAL: { value: new Vector3() },
+      EMBER: { value: new Vector3() },
     };
+
+    // Pull palette colours from CSS and refresh whenever the theme changes.
+    const root = document.documentElement;
+    const syncPalette = () => {
+      const cs = getComputedStyle(root);
+      for (const [key, cssVar] of Object.entries(FIELD_VARS)) {
+        const v = cs.getPropertyValue(cssVar).trim();
+        if (v) uniforms[key].value.fromArray(hexToRgb(v));
+      }
+    };
+    syncPalette();
+    const paletteObserver = new MutationObserver(syncPalette);
+    paletteObserver.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-palette"],
+    });
 
     const material = new ShaderMaterial({
       vertexShader,
@@ -132,6 +173,7 @@ export default function Field({ revealRef }) {
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
+      paletteObserver.disconnect();
       mesh.geometry.dispose();
       material.dispose();
       renderer.dispose();

@@ -11,7 +11,7 @@ export default function Contact() {
       <section className="section contact" id="contact">
         <div className="wrap">
           <Reveal y={30}>
-            <span className="sec-index">§06 — Contact</span>
+            <span className="sec-index">§06 · Contact</span>
             <h2 className="contact__lead">
               Traduisons la complexité en <em>décisions</em>.
             </h2>
@@ -56,7 +56,7 @@ export default function Contact() {
 
       <footer className="foot">
         <span>© 2026 Eliot Bedel</span>
-        <span>Cartographie du risque — du bruit au signal</span>
+        <span>Du bruit au signal</span>
         <button className="foot__top" onClick={() => scrollTo("#accueil")}>
           Retour en haut ↑
         </button>

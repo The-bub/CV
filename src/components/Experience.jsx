@@ -9,7 +9,7 @@ export default function Experience() {
           <h2>
             Parcours<span className="signal">.</span>
           </h2>
-          <span className="sec-index">§02 — Expérience</span>
+          <span className="sec-index">§02 · Expérience</span>
         </div>
 
         <Reveal className="xp__list" stagger={0.08} selector=".xp" y={40}>

@@ -11,6 +11,7 @@ import Skills from "./components/Skills";
 import Certifications from "./components/Certifications";
 import Education from "./components/Education";
 import Contact from "./components/Contact";
+import PaletteSwitcher from "./components/PaletteSwitcher";
 
 // Three.js is heavy and purely decorative — stream it in behind the loader.
 const Field = lazy(() => import("./components/Field"));
@@ -43,6 +44,7 @@ function App() {
       <Loader onComplete={handleComplete} revealRef={revealRef} />
 
       <Nav />
+      <PaletteSwitcher />
       <SmoothScroll paused={!ready}>
         <main>
           <Hero ready={ready} />

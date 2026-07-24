@@ -9,9 +9,12 @@ const LINKS = [
   { id: "#certifications", label: "Titres", hideable: true },
 ];
 
+// TODO: remplacer par l'URL réelle du déploiement de la V4.
+const V4_URL = "https://v4.cv.ebedel.fr/";
+
 export default function Nav() {
   const navRef = useRef(null);
-  const ctaRef = useMagnetic(0.35);
+  const ctaRef = useMagnetic(0.3);
 
   useEffect(() => {
     const onScroll = () => {
@@ -34,7 +37,7 @@ export default function Nav() {
         className="nav__mark"
         href="#accueil"
         onClick={(e) => go(e, "#accueil")}
-        aria-label="Eliot Bedel — accueil"
+        aria-label="Eliot Bedel, accueil"
       >
         <b />
         Eliot Bedel
@@ -50,13 +53,31 @@ export default function Nav() {
             {l.label}
           </a>
         ))}
+        <a className="nav__version nav__hideable" href={V4_URL}>
+          V4 <span aria-hidden="true">↗</span>
+        </a>
         <a
           ref={ctaRef}
           href="#contact"
           onClick={(e) => go(e, "#contact")}
-          className="btn"
+          className="nav__cta"
         >
           Contact
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 13 13"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M3 10L10 3M10 3H4.5M10 3V8.5"
+              stroke="currentColor"
+              strokeWidth="1.3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </a>
       </div>
     </nav>

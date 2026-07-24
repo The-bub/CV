@@ -16,8 +16,7 @@ const TOKENS = [
   "je",
   { t: "cartographie", em: true },
   "le",
-  "risque",
-  "—",
+  "risque,",
   "et",
   "je",
   "traduis",
@@ -80,7 +79,7 @@ export default function Manifesto() {
         <div className="manifesto__grid">
           <div className="manifesto__aside">
             <div className="block-label" data-mi>
-              §01 — Approche
+              §01 · Approche
             </div>
             <p data-mi>
               Expertise offensive et approche stratégique de la protection des

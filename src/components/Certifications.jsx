@@ -9,7 +9,7 @@ export default function Certifications() {
           <h2>
             Certifications<span className="signal">.</span>
           </h2>
-          <span className="sec-index">§04 — Titres</span>
+          <span className="sec-index">§04 · Titres</span>
         </div>
 
         <Reveal className="certs" stagger={0.08} selector=".cert" y={30}>

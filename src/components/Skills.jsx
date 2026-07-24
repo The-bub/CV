@@ -9,7 +9,7 @@ export default function Skills() {
           <h2>
             Expertise<span className="signal">.</span>
           </h2>
-          <span className="sec-index">§03 — Compétences</span>
+          <span className="sec-index">§03 · Compétences</span>
         </div>
 
         <Reveal className="skills__grid" stagger={0.06} selector=".skill" y={30}>

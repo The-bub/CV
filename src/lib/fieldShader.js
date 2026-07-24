@@ -26,12 +26,12 @@ export const fragmentShader = /* glsl */ `
   uniform float uScroll;    // 0..1 scroll progress
   uniform float uReduced;   // 1 = reduced motion
 
-  // Palette
-  const vec3  INK_DEEP  = vec3(0.055, 0.047, 0.035); // warm near-black
-  const vec3  INK_WARM  = vec3(0.098, 0.082, 0.058); // raised warm ink
-  const vec3  SHADOW    = vec3(0.043, 0.043, 0.070); // faint cool violet in valleys
-  const vec3  SIGNAL    = vec3(1.000, 0.353, 0.176); // vermillion
-  const vec3  EMBER     = vec3(1.000, 0.600, 0.290); // warm amber highlight
+  // Palette — fed from CSS custom properties so the field follows the theme
+  uniform vec3  INK_DEEP;   // near-black base
+  uniform vec3  INK_WARM;   // raised ink on the ridges
+  uniform vec3  SHADOW;     // faint tint in the valleys
+  uniform vec3  SIGNAL;     // accent (contour lines)
+  uniform vec3  EMBER;      // accent highlight
 
   // --- Simplex noise (Ashima / Stefan Gustavson) ------------------------
   vec3 mod289(vec3 x){ return x - floor(x * (1.0/289.0)) * 289.0; }
@@ -124,8 +124,8 @@ export const fragmentShader = /* glsl */ `
 
     // Signal glow — faint by default, blooms around the cursor
     float near = exp(-md * 3.2) * uMouseForce;
-    float energy = (0.26 + 0.20 * relief) * mix(0.55, 1.0, uReveal);
-    energy += near * 0.85;
+    float energy = (0.22 + 0.17 * relief) * mix(0.5, 0.92, uReveal);
+    energy += near * 0.8;
     vec3 lineColor = mix(SIGNAL, EMBER, relief * 0.35 + near * 0.6);
 
     vec3 col = base + lineColor * line * energy;
@@ -144,7 +144,7 @@ export const fragmentShader = /* glsl */ `
     col += g * 0.014;
 
     // Global reveal fade + hold it as a quiet background so text stays legible
-    col *= mix(0.20, 0.72, smoothstep(0.0, 1.0, uReveal));
+    col *= mix(0.16, 0.6, smoothstep(0.0, 1.0, uReveal));
 
     gl_FragColor = vec4(col, 1.0);
   }

@@ -15,7 +15,7 @@ export default function Education() {
           <h2>
             Formation &amp; distinctions<span className="signal">.</span>
           </h2>
-          <span className="sec-index">§05 — Repères</span>
+          <span className="sec-index">§05 · Repères</span>
         </div>
 
         <div className="split">
