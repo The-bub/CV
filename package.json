@@ -9,6 +9,7 @@
     "dev": "vite",
     "build": "vite build",
     "pdf": "node scripts/generate-pdf.mjs",
+    "v4:banner": "node scripts/inject-v4-banner.mjs",
     "lint": "oxlint",
     "preview": "vite preview"
   },
