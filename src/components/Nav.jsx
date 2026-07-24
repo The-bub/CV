@@ -9,10 +9,9 @@ const LINKS = [
   { id: "#certifications", label: "Titres", hideable: true },
 ];
 
-// La V4 est embarquée en sous-dossier statique (public/v4), servie sur le même
-// domaine — pas besoin d'un second nom de domaine. On vise index.html
-// explicitement pour que ça marche aussi avec le serveur de dev Vite.
-const V4_URL = "/v4/index.html";
+// La V4 est le site principal (racine). Quand la V5 est servie en secondaire
+// sous /v5/, ce lien renvoie au site principal à la racine.
+const V4_URL = "/";
 
 export default function Nav() {
   const navRef = useRef(null);
