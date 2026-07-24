@@ -632,7 +632,7 @@ main {
 }
 @media (min-width: 820px) {
   .hero__lower {
-    grid-template-columns: 1fr minmax(210px, 0.36fr);
+    grid-template-columns: 1fr minmax(240px, 0.42fr);
   }
 }
 
@@ -703,7 +703,7 @@ main {
   position: relative;
   margin: 0;
   width: 100%;
-  max-width: 240px;
+  max-width: 285px;
   justify-self: start;
 }
 @media (min-width: 820px) {
