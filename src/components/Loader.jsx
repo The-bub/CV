@@ -30,7 +30,13 @@ export default function Loader({ onComplete, revealRef }) {
       ? Array.from(nameRef.current.querySelectorAll("span"))
       : [];
 
+    let done = false;
     const finish = () => {
+      if (done) return;
+      done = true;
+      // Always hide the overlay — otherwise a code path that skips the exit
+      // animation (reduced motion) would leave the loader covering the page.
+      if (root) root.style.display = "none";
       document.body.classList.remove("is-loading");
       onComplete?.();
     };
@@ -40,11 +46,12 @@ export default function Loader({ onComplete, revealRef }) {
     };
 
     // Reduced motion: no theatrics — settle the field and reveal immediately.
+    // Call finish() synchronously (no rAF, which a hidden tab would throttle).
     if (prefersReducedMotion()) {
       chars.forEach((s, i) => (s.textContent = NAME[i]));
       if (countRef.current) countRef.current.textContent = "100";
       setReveal(1);
-      requestAnimationFrame(finish);
+      finish();
       return;
     }
 
@@ -117,6 +124,11 @@ export default function Loader({ onComplete, revealRef }) {
       "out+=0.25",
     );
     tl.set(root, { display: "none" });
+
+    // Failsafe: if the timeline ever stalls (throttled rAF, an odd browser),
+    // force completion so the loader can never trap the page. `finish` is
+    // idempotent, so this is a no-op after a normal run.
+    setTimeout(finish, 9000);
     // No cleanup: the run-once guard keeps this the only timeline, and the
     // loader never truly unmounts (it ends at display:none).
     // eslint-disable-next-line react-hooks/exhaustive-deps
