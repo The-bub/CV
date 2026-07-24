@@ -165,7 +165,7 @@ export default function Field({ revealRef }) {
       uniforms.uScroll.value = scrollSmooth;
 
       // Flow advances only near the hero — the field freezes as you scroll on.
-      flow += dt * 0.02 * (1 - smoothstep(0.02, 0.14, scrollSmooth));
+      flow += dt * 0.011 * (1 - smoothstep(0.02, 0.12, scrollSmooth));
       uniforms.uFlow.value = flow;
 
       renderer.render(scene, camera);

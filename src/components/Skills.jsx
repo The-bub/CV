@@ -3,7 +3,7 @@ import Reveal from "./Reveal";
 
 export default function Skills() {
   return (
-    <section className="section" id="expertise">
+    <section className="section section--solid" id="expertise">
       <div className="wrap">
         <div className="sec-head">
           <h2>

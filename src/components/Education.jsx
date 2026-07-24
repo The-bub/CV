@@ -9,7 +9,7 @@ export default function Education() {
   const interests = [hobbies.tech, ...hobbies.other];
 
   return (
-    <section className="section" id="formation">
+    <section className="section section--solid" id="formation">
       <div className="wrap">
         <div className="sec-head">
           <h2>

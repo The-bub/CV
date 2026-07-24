@@ -64,6 +64,7 @@ ul {
   --line-2: rgba(231, 234, 230, 0.27);
   --glass: rgba(13, 20, 17, 0.55);
   --field-shadow: #0a1310;
+  --section-solid: #0f2e22; /* fond "sapin uni" des sections alternées */
 
   /* Type */
   --f-display: "Bricolage Grotesque Variable", "Bricolage Grotesque",
@@ -107,6 +108,7 @@ ul {
   --line: rgba(236, 230, 216, 0.13);
   --line-2: rgba(236, 230, 216, 0.26);
   --field-shadow: #0b0b12;
+  --section-solid: #241811;
 }
 /* Platine — monochrome, aucun accent vif : la typo et la photo portent tout */
 :root[data-palette="platine"] {
@@ -122,6 +124,7 @@ ul {
   --line: rgba(233, 234, 231, 0.13);
   --line-2: rgba(233, 234, 231, 0.26);
   --field-shadow: #0d0f0e;
+  --section-solid: #1b1d1c;
 }
 
 /* ---- Base ---------------------------------------------------------------- */
@@ -219,6 +222,20 @@ main {
 }
 .section.is-in::before {
   transform: scaleX(1);
+}
+/* Alternating background: a solid "sapin uni" panel that hides the field,
+   giving the eye a rest between the animated (original-background) sections. */
+.section--solid {
+  background: var(--section-solid);
+}
+/* On a solid section, cards sink slightly (darkest ink) so they still read. */
+.section--solid .skill,
+.section--solid .cert {
+  background: var(--ink);
+}
+.section--solid .skill:hover,
+.section--solid .cert:hover {
+  background: var(--ink-2);
 }
 
 .wrap {

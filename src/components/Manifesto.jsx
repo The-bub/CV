@@ -74,7 +74,11 @@ export default function Manifesto() {
   }, []);
 
   return (
-    <section className="section manifesto" id="approche" ref={rootRef}>
+    <section
+      className="section section--solid manifesto"
+      id="approche"
+      ref={rootRef}
+    >
       <div className="wrap">
         <div className="manifesto__grid">
           <div className="manifesto__aside">
