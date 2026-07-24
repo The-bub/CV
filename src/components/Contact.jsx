@@ -1,66 +1,73 @@
+import { useRef } from "react";
 import { profile } from "../data";
 import Reveal from "./Reveal";
-import { useMagnetic } from "../lib/useMagnetic";
-import { scrollTo } from "../lib/scroll";
+import TargetCursor from "./TargetCursor";
 
 export default function Contact() {
-  const mailRef = useMagnetic(0.18);
+  const { contact } = profile;
+  const sectionRef = useRef(null);
 
   return (
-    <>
-      <section className="section contact" id="contact">
-        <div className="wrap">
-          <Reveal y={30}>
-            <span className="sec-index">§06 · Contact</span>
-            <h2 className="contact__lead">
-              Traduisons la complexité en <em>décisions</em>.
-            </h2>
-            <a
-              className="contact__mail"
-              href={`mailto:${profile.contact.email}`}
-              ref={mailRef}
-            >
-              {profile.contact.email}
-            </a>
-          </Reveal>
+    <section id="contact" className="section section--dark" ref={sectionRef}>
+      <TargetCursor
+        containerRef={sectionRef}
+        cursorColor="#f2eee4"
+        cursorColorOnTarget="#d98f5e"
+      />
+      <div className="section__inner section__inner--narrow">
+        <Reveal as="p" className="section__eyebrow">
+          Contact
+        </Reveal>
+        <Reveal as="h2" className="section__title">
+          Discutons de votre prochain projet
+        </Reveal>
+        <Reveal as="p" className="contact__lede">
+          Disponible pour échanger sur vos enjeux de gouvernance, de gestion des
+          risques ou de sécurité offensive.
+        </Reveal>
 
-          <Reveal className="contact__grid" stagger={0.1} selector=".contact__col" y={24}>
-            <div className="contact__col">
-              <h4>Réseau</h4>
-              <a
-                href={profile.contact.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                LinkedIn ↗
-              </a>
-            </div>
-            <div className="contact__col">
-              <h4>Localisation</h4>
-              <a
-                href={profile.contact.maps}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {profile.contact.address} ↗
-              </a>
-            </div>
-            <div className="contact__col">
-              <h4>Disponibilité</h4>
-              <p>Ouvert aux opportunités</p>
-              <p style={{ color: "var(--bone-2)" }}>GRC · Red Team · Conseil</p>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+        <Reveal as="div" className="contact__grid">
+          <a className="contact__item cursor-target" href={`mailto:${contact.email}`}>
+            <span className="contact__label">Email</span>
+            <span className="contact__value">{contact.email}</span>
+          </a>
+          <a
+            className="contact__item cursor-target"
+            href={`tel:${contact.mobile.replace(/\s/g, "").replace(/^0/, "+33")}`}
+          >
+            <span className="contact__label">Téléphone</span>
+            <span className="contact__value">{contact.mobile}</span>
+          </a>
+          <a
+            className="contact__item cursor-target"
+            href={contact.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="contact__label">LinkedIn</span>
+            <span className="contact__value">Voir le profil</span>
+          </a>
+          <a
+            className="contact__item cursor-target"
+            href={contact.maps}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="contact__label">Adresse</span>
+            <span className="contact__value">{contact.address}</span>
+          </a>
+        </Reveal>
 
-      <footer className="foot">
-        <span>© 2026 Eliot Bedel</span>
-        <span>Du bruit au signal</span>
-        <button className="foot__top" onClick={() => scrollTo("#accueil")}>
-          Retour en haut ↑
-        </button>
+        <Reveal as="p" className="contact__cv">
+          <a href="/eliot-bedel-cv.pdf" download>
+            Télécharger mon CV (PDF)
+          </a>
+        </Reveal>
+      </div>
+
+      <footer className="footer">
+        <p>© {new Date().getFullYear()} {profile.name} — {profile.title}</p>
       </footer>
-    </>
+    </section>
   );
 }

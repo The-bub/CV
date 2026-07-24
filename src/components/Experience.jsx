@@ -1,37 +1,44 @@
 import { experiences } from "../data";
 import Reveal from "./Reveal";
+import BlurText from "./BlurText";
 
 export default function Experience() {
   return (
-    <section className="section" id="parcours">
-      <div className="wrap">
-        <div className="sec-head">
-          <h2>
-            Parcours<span className="signal">.</span>
-          </h2>
-          <span className="sec-index">§02 · Expérience</span>
-        </div>
-
-        <Reveal className="xp__list" stagger={0.08} selector=".xp" y={40}>
-          {experiences.map((xp, i) => (
-            <article className="xp" key={`${xp.role}-${i}`}>
-              <div className="xp__period">{xp.period}</div>
-              <div>
-                <h3 className="xp__role">{xp.role}</h3>
-                <span className="xp__company">{xp.company}</span>
-              </div>
-              <ul className="xp__items">
-                {xp.items.map((it, j) => (
-                  <li key={j}>{it}</li>
-                ))}
-              </ul>
-              <span className="xp__num">
-                {String(i + 1).padStart(2, "0")} /{" "}
-                {String(experiences.length).padStart(2, "0")}
-              </span>
-            </article>
-          ))}
+    <section id="parcours" className="section">
+      <div className="section__inner">
+        <Reveal as="p" className="section__eyebrow">
+          Parcours
         </Reveal>
+        <h2 className="section__title">
+          <BlurText text="Expériences professionnelles" as="span" delay={30} />
+        </h2>
+
+        <div className="dossier">
+          {experiences.map((exp, i) => {
+            const isCurrent = exp.period.toLowerCase().startsWith("depuis");
+            return (
+              <Reveal as="article" className="dossier__item" key={i}>
+                <span className="dossier__index">{String(i + 1).padStart(2, "0")}</span>
+                <div className="dossier__body">
+                  <div className="dossier__head">
+                    <h3 className="dossier__role">{exp.role}</h3>
+                    <span
+                      className={`dossier__period ${isCurrent ? "dossier__period--current" : ""}`}
+                    >
+                      {exp.period}
+                    </span>
+                  </div>
+                  <p className="dossier__company">{exp.company}</p>
+                  <ul className="dossier__list">
+                    {exp.items.map((item, j) => (
+                      <li key={j}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
