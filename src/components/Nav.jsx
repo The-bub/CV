@@ -9,8 +9,10 @@ const LINKS = [
   { id: "#certifications", label: "Titres", hideable: true },
 ];
 
-// TODO: remplacer par l'URL réelle du déploiement de la V4.
-const V4_URL = "https://v4.cv.ebedel.fr/";
+// La V4 est embarquée en sous-dossier statique (public/v4), servie sur le même
+// domaine — pas besoin d'un second nom de domaine. On vise index.html
+// explicitement pour que ça marche aussi avec le serveur de dev Vite.
+const V4_URL = "/v4/index.html";
 
 export default function Nav() {
   const navRef = useRef(null);

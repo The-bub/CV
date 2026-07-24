@@ -241,6 +241,7 @@ function ResumeDocument() {
         View,
         { style: styles.contactRow },
         h(Text, { style: styles.contactItem }, profile.contact.email),
+        h(Text, { style: styles.contactItem }, profile.contact.mobile),
         h(Text, { style: styles.contactItem }, profile.contact.address),
         h(Text, { style: styles.contactItem }, profile.contact.linkedin),
       ),
