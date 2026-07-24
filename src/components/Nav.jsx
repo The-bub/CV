@@ -51,7 +51,7 @@ export default function Nav() {
             href="/v5/index.html"
             onClick={() => setOpen(false)}
           >
-            V5 ↗
+            CV Version Créative ↗
           </a>
         </nav>
         <button
