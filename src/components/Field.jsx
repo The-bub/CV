@@ -10,6 +10,7 @@ import {
   Vector3,
 } from "three";
 import { vertexShader, fragmentShader } from "../lib/fieldShader";
+import { isReduced, onMotionChange } from "../lib/motion";
 
 // Field colours are read from the active palette's CSS custom properties so the
 // background follows the theme (vermillon / sapin / platine).
@@ -42,8 +43,9 @@ export default function Field({ revealRef }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Le champ anime sur toutes les machines (voir HONOUR_REDUCED_MOTION dans lib/gsap.js).
-    const reduced = false;
+    // Animated by default on every machine; the visitor can freeze it from the
+    // "Animations" control at any moment (see lib/motion.js).
+    let reduced = isReduced();
 
     let renderer;
     try {
@@ -157,16 +159,19 @@ export default function Field({ revealRef }) {
       smooth.lerp(target, 0.08);
       uniforms.uMouse.value.copy(smooth);
       force *= 0.94;
-      uniforms.uMouseForce.value = force;
+      uniforms.uMouseForce.value = reduced ? 0 : force;
 
       uniforms.uReveal.value = revealRef ? revealRef.current : 1;
 
       scrollSmooth += (scrollProgress() - scrollSmooth) * 0.1;
       uniforms.uScroll.value = scrollSmooth;
 
-      // Flow advances only near the hero — the field freezes as you scroll on.
-      flow += dt * 0.011 * (1 - smoothstep(0.02, 0.12, scrollSmooth));
-      uniforms.uFlow.value = flow;
+      // Flow advances only near the hero — the field freezes as you scroll on,
+      // and entirely when the visitor has asked for reduced motion.
+      if (!reduced) {
+        flow += dt * 0.011 * (1 - smoothstep(0.02, 0.12, scrollSmooth));
+        uniforms.uFlow.value = flow;
+      }
 
       renderer.render(scene, camera);
 
@@ -180,11 +185,21 @@ export default function Field({ revealRef }) {
     };
     document.addEventListener("visibilitychange", onVisibility);
 
+    // Live response to the "Animations" control: wake the loop for one frame so
+    // it can either settle to a still image or resume flowing.
+    const offMotion = onMotionChange((r) => {
+      reduced = r;
+      uniforms.uReduced.value = r ? 1 : 0;
+      running = !document.hidden;
+      lastNow = performance.now();
+    });
+
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
+      offMotion();
       paletteObserver.disconnect();
       mesh.geometry.dispose();
       material.dispose();

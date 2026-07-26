@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { gsap, prefersReducedMotion } from "./gsap";
+import { onMotionChange } from "./motion";
 
 /** Pull an element toward the cursor within its bounds, then spring back. */
 export function useMagnetic(strength = 0.4) {
@@ -7,7 +8,7 @@ export function useMagnetic(strength = 0.4) {
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || prefersReducedMotion()) return;
+    if (!el) return;
     if (!window.matchMedia("(pointer: fine)").matches) return;
 
     const xTo = gsap.quickTo(el, "x", { duration: 0.6, ease: "elastic.out(1, 0.4)" });
@@ -25,11 +26,25 @@ export function useMagnetic(strength = 0.4) {
       yTo(0);
     };
 
-    el.addEventListener("pointermove", move);
-    el.addEventListener("pointerleave", leave);
-    return () => {
+    const attach = () => {
+      if (prefersReducedMotion()) return;
+      el.addEventListener("pointermove", move);
+      el.addEventListener("pointerleave", leave);
+    };
+    const detach = () => {
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerleave", leave);
+      gsap.set(el, { x: 0, y: 0 });
+    };
+
+    attach();
+    const offMotion = onMotionChange((reduced) =>
+      reduced ? detach() : attach(),
+    );
+
+    return () => {
+      offMotion();
+      detach();
     };
   }, [strength]);
 

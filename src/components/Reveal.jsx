@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { gsap, prefersReducedMotion } from "../lib/gsap";
+import { onMotionChange } from "../lib/motion";
 
 /**
  * Reveals its content on scroll. Without `stagger` it animates the wrapper;
@@ -44,7 +45,21 @@ export default function Reveal({
       });
     }, el);
 
-    return () => ctx.revert();
+    // Changing the motion preference mid-visit must never leave content
+    // stranded at opacity 0 — in either direction. `ctx.revert()` does not undo
+    // the `gsap.set()` above, so the inline props are cleared explicitly and the
+    // content falls back to its visible CSS state. Reveals are deliberately not
+    // re-armed: re-hiding text the visitor has already read to replay an
+    // entrance would be worse than simply leaving it on screen.
+    const offMotion = onMotionChange(() => {
+      ctx.revert();
+      gsap.set(targets, { clearProps: "all" });
+    });
+
+    return () => {
+      offMotion();
+      ctx.revert();
+    };
   }, [stagger, selector, y, duration, delay, start]);
 
   return (

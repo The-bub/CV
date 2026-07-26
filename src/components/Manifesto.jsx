@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { gsap, ScrollTrigger, prefersReducedMotion } from "../lib/gsap";
+import { onMotionChange } from "../lib/motion";
 
 // Distilled from the bio — his real arc: Red Team → management du risque.
 const TOKENS = [
@@ -67,7 +68,20 @@ export default function Manifesto() {
       });
     }, el);
 
+    // The scrubbed words sit at opacity 0.14 until they are read through, so a
+    // motion change has to release them — never freeze them half-dimmed, in
+    // either direction. `ctx.revert()` alone does not undo a `gsap.set()`, so the
+    // inline props are cleared explicitly: the words fall back to their CSS
+    // state, fully legible, and the scrub is not re-armed.
+    const offMotion = onMotionChange(() => {
+      ctx.revert();
+      gsap.set(words, { clearProps: "all" });
+      gsap.set(el.querySelectorAll("[data-mi]"), { clearProps: "all" });
+      ScrollTrigger.refresh();
+    });
+
     return () => {
+      offMotion();
       ctx.revert();
       ScrollTrigger.refresh();
     };

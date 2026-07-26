@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 
-// Live palette comparison. "" = sapin (default tokens in :root).
+// Live palette comparison. "" = sapin (default tokens in :root), so it carries
+// its own `key` — falling back to another option's id collided with it.
 const OPTIONS = [
-  { id: "", label: "Sapin", sw: "#4fa587" },
-  { id: "vermillon", label: "Vermillon", sw: "#ff5a2d" },
-  { id: "platine", label: "Platine", sw: "#c9cdc6" },
+  { id: "", key: "sapin", label: "Sapin", sw: "#4fa587" },
+  { id: "vermillon", key: "vermillon", label: "Vermillon", sw: "#ff5a2d" },
+  { id: "platine", key: "platine", label: "Platine", sw: "#c9cdc6" },
 ];
 
 function apply(id) {
@@ -29,11 +30,15 @@ export default function PaletteSwitcher() {
   };
 
   return (
-    <div className="palette-switch" role="group" aria-label="Choix de palette">
-      <span className="palette-switch__label">Palette</span>
+    <div
+      className="palette-switch controls__pill"
+      role="group"
+      aria-label="Choix de palette"
+    >
+      <span className="controls__label">Palette</span>
       {OPTIONS.map((o) => (
         <button
-          key={o.id || "vermillon"}
+          key={o.key}
           type="button"
           className={
             "palette-switch__sw" + (active === o.id ? " is-active" : "")

@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react";
+import { ScrollTrigger } from "./lib/gsap";
+import { scrollTo } from "./lib/scroll";
 import GrainOverlay from "./components/GrainOverlay";
 import Cursor from "./components/Cursor";
 import Loader from "./components/Loader";
@@ -12,6 +14,7 @@ import Certifications from "./components/Certifications";
 import Education from "./components/Education";
 import Contact from "./components/Contact";
 import PaletteSwitcher from "./components/PaletteSwitcher";
+import MotionToggle from "./components/MotionToggle";
 
 // Three.js is heavy and purely decorative — stream it in behind the loader.
 const Field = lazy(() => import("./components/Field"));
@@ -22,10 +25,25 @@ function App() {
 
   useEffect(() => {
     document.body.classList.add("is-loading");
+    // Belt and braces with history.scrollRestoration = "manual" in index.html:
+    // the loader hands over from the top of the hero, and both Lenis and
+    // ScrollTrigger must take their first measurements at offset 0.
+    window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
-    if (ready) document.body.classList.remove("is-loading");
+    if (!ready) return;
+    document.body.classList.remove("is-loading");
+
+    // The document was locked at 100vh while the loader played, so ScrollTrigger
+    // measured a clamped page. Re-measure now that the real height is in place,
+    // then honour a #hash entry (deep links still work despite the manual
+    // scroll restoration above).
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+      const hash = window.location.hash;
+      if (hash.length > 1 && document.querySelector(hash)) scrollTo(hash);
+    });
   }, [ready]);
 
   // Chapter cuts: draw each section's accent rule when it scrolls into view.
@@ -62,7 +80,6 @@ function App() {
       <Loader onComplete={handleComplete} revealRef={revealRef} />
 
       <Nav />
-      <PaletteSwitcher />
       <SmoothScroll paused={!ready}>
         <main>
           <Hero ready={ready} />
@@ -74,6 +91,13 @@ function App() {
           <Contact />
         </main>
       </SmoothScroll>
+
+      {/* After <main> on purpose: these sit at the end of the tab order rather
+          than between the nav and the hero's CV button. */}
+      <div className="controls">
+        <PaletteSwitcher />
+        <MotionToggle />
+      </div>
     </>
   );
 }

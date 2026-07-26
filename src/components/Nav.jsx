@@ -29,14 +29,19 @@ export default function Nav() {
   }, []);
 
   // Scroll-spy: mark the nav link whose section is crossing the viewport middle.
+  // The hero is observed too, without a link of its own: back at the top, no
+  // section is current, so the highlight clears instead of staying stuck on
+  // whichever link was last passed.
   useEffect(() => {
-    const sections = LINKS.map((l) => document.getElementById(l.id.slice(1)))
-      .filter(Boolean);
+    const ids = ["accueil", ...LINKS.map((l) => l.id.slice(1))];
+    const sections = ids.map((id) => document.getElementById(id)).filter(Boolean);
     if (!sections.length) return;
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting) setActive(e.target.id);
+          if (e.isIntersecting) {
+            setActive(e.target.id === "accueil" ? "" : e.target.id);
+          }
         });
       },
       { rootMargin: "-45% 0px -50% 0px" },
