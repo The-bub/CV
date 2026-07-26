@@ -55,7 +55,7 @@ ul {
   --ink-3: #18241e;
   --bone: #e7eae6;
   --bone-2: #a8b2ac;
-  --bone-3: #8b948d;
+  --bone-3: #9aa39c;
   --signal: #4fa587;
   --signal-2: #77c4a6;
   --ember: #b8e0cd;
@@ -227,6 +227,8 @@ main {
    giving the eye a rest between the animated (original-background) sections. */
 .section--solid {
   background: var(--section-solid);
+  /* Brighten the accent on the solid panel so green-on-green keeps AA contrast. */
+  --signal: var(--signal-2);
 }
 /* On a solid section, cards sink slightly (darkest ink) so they still read. */
 .section--solid .skill,
@@ -313,7 +315,6 @@ main {
   left: 0;
   z-index: 150;
   pointer-events: none;
-  border-radius: 50%;
   will-change: transform;
   mix-blend-mode: difference;
 }
@@ -322,25 +323,24 @@ main {
   height: 6px;
   margin: -3px 0 0 -3px;
   background: var(--bone);
+  border-radius: 50%;
 }
-.cursor-ring {
+/* Inner ring scales via transform instead of resizing width/height (no layout thrash) */
+.cursor-ring__i {
+  display: block;
   width: 40px;
   height: 40px;
   margin: -20px 0 0 -20px;
   border: 1px solid var(--bone);
-  transition: width 0.3s var(--ease), height 0.3s var(--ease),
-    opacity 0.3s var(--ease), background 0.3s var(--ease);
+  border-radius: 50%;
+  transition: transform 0.3s var(--ease), background 0.3s var(--ease);
 }
-.cursor-ring.is-hover {
-  width: 64px;
-  height: 64px;
-  margin: -32px 0 0 -32px;
+.cursor-ring.is-hover .cursor-ring__i {
+  transform: scale(1.6);
   background: rgba(236, 230, 216, 0.08);
 }
-.cursor-ring.is-down {
-  width: 30px;
-  height: 30px;
-  margin: -15px 0 0 -15px;
+.cursor-ring.is-down .cursor-ring__i {
+  transform: scale(0.75);
 }
 @media (hover: none), (pointer: coarse) {
   .cursor-dot,
@@ -546,6 +546,14 @@ main {
   transform: scaleX(1);
   transform-origin: left;
 }
+/* Scroll-spy active section */
+.nav__links a.is-active {
+  color: var(--bone);
+}
+.nav__links a.is-active::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
 .nav__links a.nav__version {
   color: var(--bone-3);
   display: inline-flex;
@@ -597,7 +605,7 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(5rem, 10vh, 7.5rem) var(--gutter) clamp(3.5rem, 8vh, 5rem);
+  padding: clamp(4.5rem, 8.5vh, 6.5rem) var(--gutter) clamp(3rem, 7vh, 4.25rem);
 }
 .hero__wrap {
   width: 100%;
@@ -644,7 +652,7 @@ main {
   display: grid;
   grid-template-columns: 1fr;
   gap: clamp(2rem, 5vw, 3.5rem);
-  margin-top: clamp(1.75rem, 3.5vh, 3rem);
+  margin-top: clamp(1.5rem, 3vh, 2.25rem);
   align-items: stretch;
 }
 @media (min-width: 820px) {

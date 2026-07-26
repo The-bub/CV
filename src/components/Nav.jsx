@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { scrollTo } from "../lib/scroll";
 import { useMagnetic } from "../lib/useMagnetic";
 
@@ -16,6 +16,7 @@ const V4_URL = "/";
 export default function Nav() {
   const navRef = useRef(null);
   const ctaRef = useMagnetic(0.3);
+  const [active, setActive] = useState("");
 
   useEffect(() => {
     const onScroll = () => {
@@ -25,6 +26,23 @@ export default function Nav() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Scroll-spy: mark the nav link whose section is crossing the viewport middle.
+  useEffect(() => {
+    const sections = LINKS.map((l) => document.getElementById(l.id.slice(1)))
+      .filter(Boolean);
+    if (!sections.length) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) setActive(e.target.id);
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" },
+    );
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
   }, []);
 
   const go = (e, id) => {
@@ -49,7 +67,12 @@ export default function Nav() {
             key={l.id}
             href={l.id}
             onClick={(e) => go(e, l.id)}
-            className={l.hideable ? "nav__hideable" : undefined}
+            aria-current={active === l.id.slice(1) ? "true" : undefined}
+            className={
+              `${l.hideable ? "nav__hideable" : ""}${
+                active === l.id.slice(1) ? " is-active" : ""
+              }`.trim() || undefined
+            }
           >
             {l.label}
           </a>

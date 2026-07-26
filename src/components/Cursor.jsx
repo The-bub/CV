@@ -65,7 +65,9 @@ export default function Cursor() {
   return (
     <>
       <div ref={dotRef} className="cursor-dot" style={{ opacity: 0 }} />
-      <div ref={ringRef} className="cursor-ring" style={{ opacity: 0 }} />
+      <div ref={ringRef} className="cursor-ring" style={{ opacity: 0 }}>
+        <span className="cursor-ring__i" />
+      </div>
     </>
   );
 }
