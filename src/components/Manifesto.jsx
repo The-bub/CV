@@ -114,17 +114,32 @@ export default function Manifesto() {
             </div>
           </div>
 
-          <p className="manifesto__text" ref={textRef}>
-            {TOKENS.map((tok, i) => {
-              const isEm = typeof tok === "object";
-              const text = isEm ? tok.t : tok;
-              return (
-                <span className="word" key={i}>
-                  {isEm ? <em>{text}</em> : text}
-                </span>
-              );
-            })}
-          </p>
+          <div className="manifesto__body">
+            {/* The section had no heading of its own — only a mono block-label —
+                so the document went h1 → h2 (Parcours) with this panel silent. */}
+            <h2 className="manifesto__title" data-mi>
+              Traduire la complexité technique en décision
+            </h2>
+            <p className="manifesto__prose" data-mi>
+              J'ai piloté une Red Team et mené des tests d'intrusion durant 3 ans,
+              avant de me tourner vers le management du risque IT. Aujourd'hui,
+              j'accompagne l'identification et la maîtrise des risques sur des
+              périmètres applicatifs et des activités critiques, pour offrir une
+              vision 360° du risque cyber.
+            </p>
+
+            <p className="manifesto__text" ref={textRef}>
+              {TOKENS.map((tok, i) => {
+                const isEm = typeof tok === "object";
+                const text = isEm ? tok.t : tok;
+                return (
+                  <span className="word" key={i}>
+                    {isEm ? <em>{text}</em> : text}
+                  </span>
+                );
+              })}
+            </p>
+          </div>
         </div>
       </div>
     </section>

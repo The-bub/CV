@@ -11,6 +11,14 @@ import {
 } from "three";
 import { vertexShader, fragmentShader } from "../lib/fieldShader";
 import { isReduced, onMotionChange } from "../lib/motion";
+import {
+  focusX,
+  focusY,
+  focusForce,
+  driftClock,
+  subscribeDrift,
+  setFieldLive,
+} from "../lib/drift";
 
 // Field colours are read from the active palette's CSS custom properties so the
 // background follows the theme (vermillon / sapin / platine).
@@ -56,8 +64,11 @@ export default function Field({ revealRef }) {
         powerPreference: "high-performance",
       });
     } catch {
-      // No WebGL — the CSS background under the canvas is the graceful fallback.
+      // No WebGL — the CSS background under the canvas is the graceful fallback,
+      // and the hero must be told there is no light source before it starts
+      // lighting its title from one.
       canvas.style.display = "none";
+      setFieldLive(false);
       return;
     }
 
@@ -70,8 +81,8 @@ export default function Field({ revealRef }) {
     const uniforms = {
       uTime: { value: 0 },
       uResolution: { value: new Vector2(1, 1) },
-      uMouse: { value: new Vector2(0.5, 0.5) },
-      uMouseForce: { value: 0 },
+      uFocus: { value: new Vector2(0.5, 0.5) },
+      uFocusForce: { value: 0 },
       uReveal: { value: 0 },
       uScroll: { value: 0 },
       uFlow: { value: 0 },
@@ -120,17 +131,10 @@ export default function Field({ revealRef }) {
     resize();
     window.addEventListener("resize", resize);
 
-    // Pointer (smoothed target + decaying force)
-    const target = new Vector2(0.5, 0.5);
-    const smooth = new Vector2(0.5, 0.5);
-    let force = 0;
-    const onPointer = (e) => {
-      const x = e.clientX / window.innerWidth;
-      const y = 1 - e.clientY / window.innerHeight;
-      target.set(x, y);
-      force = 1;
-    };
-    window.addEventListener("pointermove", onPointer, { passive: true });
+    // The focal point wanders on its own — see lib/drift.js, which the hero
+    // reads from too so its title is lit by this exact light.
+    const unsubscribeDrift = subscribeDrift();
+    setFieldLive(true);
 
     const scrollProgress = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -156,10 +160,9 @@ export default function Field({ revealRef }) {
       lastNow = now;
       uniforms.uTime.value = (now - start) / 1000;
 
-      smooth.lerp(target, 0.08);
-      uniforms.uMouse.value.copy(smooth);
-      force *= 0.94;
-      uniforms.uMouseForce.value = reduced ? 0 : force;
+      const dc = driftClock();
+      uniforms.uFocus.value.set(focusX(dc), focusY(dc));
+      uniforms.uFocusForce.value = reduced ? 0 : focusForce(dc);
 
       uniforms.uReveal.value = revealRef ? revealRef.current : 1;
 
@@ -196,8 +199,9 @@ export default function Field({ revealRef }) {
 
     return () => {
       cancelAnimationFrame(raf);
+      setFieldLive(false);
+      unsubscribeDrift();
       window.removeEventListener("resize", resize);
-      window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
       offMotion();
       paletteObserver.disconnect();

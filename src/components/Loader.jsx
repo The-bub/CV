@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import { gsap, prefersReducedMotion } from "../lib/gsap";
 
 const NAME = "ELIOT BEDEL";
+const SEEN_KEY = "cv-intro-seen";
 const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/\\#%<>*·";
 const PHRASES = [
   "Calibration du champ",
@@ -31,9 +32,13 @@ export default function Loader({ onComplete, revealRef }) {
       : [];
 
     let done = false;
+    // Assigned once the skip listeners exist; finish() is the single exit, so
+    // it owns tearing them down no matter which path reached it.
+    let releaseSkip = () => {};
     const finish = () => {
       if (done) return;
       done = true;
+      releaseSkip();
       // Always hide the overlay — otherwise a code path that skips the exit
       // animation (reduced motion) would leave the loader covering the page.
       if (root) root.style.display = "none";
@@ -45,14 +50,34 @@ export default function Loader({ onComplete, revealRef }) {
       if (revealRef) revealRef.current = v;
     };
 
-    // Reduced motion: no theatrics — settle the field and reveal immediately.
-    // Call finish() synchronously (no rAF, which a hidden tab would throttle).
-    if (prefersReducedMotion()) {
-      chars.forEach((s, i) => (s.textContent = NAME[i]));
+    // Land the composition in its finished state without playing it.
+    const settle = () => {
+      chars.forEach((s, i) => {
+        s.textContent = NAME[i];
+        s.style.color = "var(--bone)";
+      });
       if (countRef.current) countRef.current.textContent = "100";
       setReveal(1);
       finish();
+    };
+
+    // Reduced motion: no theatrics — settle the field and reveal immediately.
+    // Call finish() synchronously (no rAF, which a hidden tab would throttle).
+    if (prefersReducedMotion()) {
+      settle();
       return;
+    }
+
+    // A returning visitor has already watched this. The intro is worth ~4s of a
+    // visit measured in tens of seconds, and it is only worth spending once.
+    try {
+      if (sessionStorage.getItem(SEEN_KEY)) {
+        settle();
+        return;
+      }
+      sessionStorage.setItem(SEEN_KEY, "1");
+    } catch {
+      // private mode / storage disabled — just play the intro
     }
 
     const state = { v: 0 };
@@ -63,7 +88,7 @@ export default function Loader({ onComplete, revealRef }) {
     // Counter + name resolving from noise + progress bar, all driven together.
     tl.to(state, {
       v: 100,
-      duration: 2.4,
+      duration: 1.2,
       ease: "power2.inOut",
       onUpdate: () => {
         const p = state.v / 100;
@@ -125,6 +150,27 @@ export default function Loader({ onComplete, revealRef }) {
     );
     tl.set(root, { display: "none" });
 
+    // Let the visitor out. An intro nobody can skip spends someone else's
+    // attention budget on our behalf; `settle()` lands the same end state, so
+    // skipping costs nothing but the theatre.
+    const skip = () => {
+      if (done) return;
+      tl.kill();
+      settle();
+    };
+    const onKey = (e) => {
+      // Not any key: Tab must still reach the skip link, and modified presses
+      // belong to the browser.
+      if (e.metaKey || e.ctrlKey || e.altKey || e.key === "Tab") return;
+      skip();
+    };
+    root?.addEventListener("pointerdown", skip);
+    window.addEventListener("keydown", onKey);
+    releaseSkip = () => {
+      root?.removeEventListener("pointerdown", skip);
+      window.removeEventListener("keydown", onKey);
+    };
+
     // Failsafe: if the timeline ever stalls (throttled rAF, an odd browser),
     // force completion so the loader can never trap the page. `finish` is
     // idempotent, so this is a no-op after a normal run.
@@ -156,11 +202,9 @@ export default function Loader({ onComplete, revealRef }) {
           <span ref={countRef}>000</span>
           <sup>%</sup>
         </div>
-        <div className="loader__meta meta">
-          Nantes, France
-          <br />
-          47.2184° N / 1.5536° W
-        </div>
+        {/* A skip that nobody can see is not a skip. Stated plainly rather than
+            left as a hidden gesture. */}
+        <div className="loader__meta meta">Appuyez pour passer l'intro</div>
         <div className="loader__bar">
           <i ref={barRef} />
         </div>

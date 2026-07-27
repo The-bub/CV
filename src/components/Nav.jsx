@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { scrollTo } from "../lib/scroll";
-import { useMagnetic } from "../lib/useMagnetic";
 
 const LINKS = [
   { id: "#approche", label: "Approche", hideable: true },
@@ -15,7 +14,6 @@ const V4_URL = "/";
 
 export default function Nav() {
   const navRef = useRef(null);
-  const ctaRef = useMagnetic(0.3);
   const [active, setActive] = useState("");
 
   useEffect(() => {
@@ -85,12 +83,7 @@ export default function Nav() {
         <a className="nav__version nav__hideable" href={V4_URL}>
           V4 <span aria-hidden="true">↗</span>
         </a>
-        <a
-          ref={ctaRef}
-          href="#contact"
-          onClick={(e) => go(e, "#contact")}
-          className="nav__cta"
-        >
+        <a href="#contact" onClick={(e) => go(e, "#contact")} className="nav__cta">
           Contact
           <svg
             width="13"

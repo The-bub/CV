@@ -5,10 +5,11 @@
 // of desktops (Windows in particular) report `reduce` without the owner ever
 // asking for it, which used to blank the loader and every reveal on this site.
 //
-// Instead the visitor gets an explicit control (see components/MotionToggle),
-// so the one group the animated default excludes has a way out. The choice is
-// persisted and re-applied before first paint by the inline script in
-// index.html, so a returning visitor never sees a frame of unwanted motion.
+// The visitor-facing toggle that used to drive this was removed on request, so
+// `data-motion` is now always "full" and `isReduced()` always false. The
+// plumbing is kept because Field, Reveal, SmoothScroll and Manifesto all branch
+// on it: setting `data-motion="reduced"` on <html> still calms the whole site,
+// which is the hook to reach for if a control is ever wanted back.
 
 const KEY = "cv-motion";
 const listeners = new Set();

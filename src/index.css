@@ -60,6 +60,11 @@ ul {
   --signal-2: #77c4a6;
   --ember: #b8e0cd;
 
+  /* Lit end of the hero signature. Derived from the accent, so each palette
+     lights its type in its own colour — and genuinely brighter than --bone,
+     which --ember was not: it is a lateral hue move, not a highlight. */
+  --lit-hi: color-mix(in srgb, #fff 84%, var(--signal-2));
+
   --line: rgba(231, 234, 230, 0.14);
   --line-2: rgba(231, 234, 230, 0.27);
   --glass: rgba(13, 20, 17, 0.55);
@@ -252,6 +257,9 @@ main {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  /* `.sec-index` is nowrap, and a flex item defaults to min-width:auto — without
+     wrapping it cannot yield and pushes past a 320px viewport instead. */
+  flex-wrap: wrap;
   gap: 1.5rem;
   padding-bottom: clamp(2rem, 4vw, 4rem);
   border-bottom: 1px solid var(--line);
@@ -304,50 +312,6 @@ main {
   opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   mix-blend-mode: overlay;
-}
-
-/* ============================================================================
-   CUSTOM CURSOR
-   ============================================================================ */
-.cursor-dot,
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 150;
-  pointer-events: none;
-  will-change: transform;
-  mix-blend-mode: difference;
-}
-.cursor-dot {
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
-  background: var(--bone);
-  border-radius: 50%;
-}
-/* Inner ring scales via transform instead of resizing width/height (no layout thrash) */
-.cursor-ring__i {
-  display: block;
-  width: 40px;
-  height: 40px;
-  margin: -20px 0 0 -20px;
-  border: 1px solid var(--bone);
-  border-radius: 50%;
-  transition: transform 0.3s var(--ease), background 0.3s var(--ease);
-}
-.cursor-ring.is-hover .cursor-ring__i {
-  transform: scale(1.6);
-  background: color-mix(in srgb, var(--bone) 8%, transparent);
-}
-.cursor-ring.is-down .cursor-ring__i {
-  transform: scale(0.75);
-}
-@media (hover: none), (pointer: coarse) {
-  .cursor-dot,
-  .cursor-ring {
-    display: none;
-  }
 }
 
 /* ============================================================================
@@ -640,7 +604,15 @@ main {
 }
 
 .hero__title {
-  font-size: var(--fs-mega);
+  /* The guard matters because of the two rules below: the glyphs are separate
+     inline-blocks held on one line by `nowrap`, inside a mask that clips. An
+     overflow would silently amputate the signature rather than wrap it.
+     Measured live: "Vision 360°" is 5.033× its font-size and "du risque cyber"
+     4.841×, so 5.03 is the binding line; dividing by 5.5 leaves ~9% for
+     webfont-fallback drift during `font-display: swap`.
+     RE-MEASURE THIS IF THE SIGNATURE COPY CHANGES — an earlier draft of this
+     title ran to 6.92× and would have been clipped by the old divisor. */
+  font-size: min(var(--fs-mega), calc((100vw - 2 * var(--gutter)) / 5.5));
   font-weight: 600;
   line-height: 0.9;
   letter-spacing: -0.04em;
@@ -651,16 +623,65 @@ main {
   /* room for descenders (g, y…) inside the reveal-mask clip box */
   padding-bottom: 0.16em;
   margin-bottom: -0.08em;
-}
-.hero__title .line > span {
-  display: inline-block;
-  will-change: transform;
+  /* The glyphs are separate inline-blocks, so without this the browser is free
+     to break the signature mid-word at narrow widths. */
+  white-space: nowrap;
 }
 .hero__title .thin {
   font-family: var(--f-serif);
   font-style: italic;
   font-weight: 300;
   letter-spacing: -0.02em;
+}
+
+/* --- Per-glyph light ------------------------------------------------------
+   Every letter is its own measuring point: `--lit` is written each frame from
+   the distance between that glyph and the field's drifting focal point, so the
+   background's light actually rakes across the signature. Registering the
+   property keeps it a real number (interpolable, and never a parse error at
+   paint time). The resting value is 0 — unlit is the CSS default, so the type
+   is correct with no script running. */
+@property --lit {
+  syntax: "<number>";
+  initial-value: 0;
+  inherits: false;
+}
+/* The signature needs dynamic range, and at full --bone there is no headroom to
+   brighten into — so the resting state sits a step back into the ink and the
+   light brings each letter up out of it. That IS the concept: the signal
+   surfacing as it passes. Recessed platinum still clears ~9:1 on this ink, far
+   above the 3:1 large-text floor, so nothing is traded for legibility. */
+.hero__g {
+  display: inline-block;
+  --lit: 0;
+  color: color-mix(
+    in oklab,
+    color-mix(in oklab, var(--bone), var(--ink) 30%),
+    var(--lit-hi) calc(var(--lit) * 100%)
+  );
+  /* Light on a surface is brightness AND bloom. `--lit` squared keeps the glow
+     out of the mid-range, so it only blooms at the crest of a pass instead of
+     leaving a permanent haze on the signature. */
+  text-shadow: 0 0 calc(var(--lit) * var(--lit) * 0.4em)
+    color-mix(in srgb, var(--signal-2) calc(var(--lit) * 55%), transparent);
+}
+.hero__title .thin .hero__g {
+  color: color-mix(
+    in oklab,
+    color-mix(in oklab, var(--bone-2), var(--ink) 26%),
+    var(--lit-hi) calc(var(--lit) * 100%)
+  );
+}
+
+/* Role line — the job title, demoted out of the signature but kept high and
+   legible, because a recruiter scanning for two seconds needs the category even
+   though the H1 now carries the argument. */
+.hero__role {
+  margin-top: clamp(0.9rem, 2vh, 1.4rem);
+  font-family: var(--f-mono);
+  font-size: clamp(0.72rem, 0.62rem + 0.3vw, 0.9rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--bone-2);
 }
 
@@ -751,6 +772,10 @@ main {
   .hero__portrait {
     justify-self: end;
     align-self: end;
+    /* More presence on desktop nav — the grid column has room (~378px at
+       1440px, see .hero__lower's 0.42fr) well past this cap. Capped at 310
+       rather than higher: 340 pushed the hero 61px past a 1440×900 fold. */
+    max-width: 310px;
   }
 }
 .hero__portrait img {
@@ -822,6 +847,101 @@ main {
   }
 }
 
+/* --- Phones ---------------------------------------------------------------
+   PRODUCT.md is explicit that this is the primary context: most visitors arrive
+   from LinkedIn on a phone, between two meetings, with seconds of attention, and
+   success is a CV download or a contact. Left as a scaled desktop layout the
+   hero ran 1108px against a 568px viewport, which put the CV button 75px BELOW
+   the fold — the one thing that must never happen here. So the rhythm tightens,
+   the three figures become a single row, and the portrait yields the fold rather
+   than competing for it: on a phone it is the reward for scrolling, and it is
+   still the first thing met on the way down. */
+@media (max-width: 640px) {
+  .hero {
+    padding-top: 4.25rem; /* clears the 60px fixed nav, and no more */
+    padding-bottom: 2rem;
+  }
+  .hero__topline {
+    margin-bottom: 1rem;
+  }
+  .hero__title {
+    line-height: 0.88;
+  }
+  .hero__lower {
+    margin-top: 1rem;
+    gap: 1.5rem;
+  }
+  .hero__intro {
+    gap: 1.15rem;
+  }
+  .hero__lead {
+    font-size: 1.07rem;
+    line-height: 1.36;
+  }
+  .hero__foot {
+    gap: 1.1rem;
+  }
+  /* One row of three. The figures are a set — 9 years, 3 offensive, 2 podiums —
+     and they only read as a set on a single line; wrapped into two rows they
+     become a list of unrelated numbers. */
+  .hero__stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.7rem;
+  }
+  .hstat dt {
+    font-size: 1.6rem;
+  }
+  .hstat dd {
+    max-width: none;
+    font-size: 0.76rem;
+    line-height: 1.25;
+  }
+  .hero__portrait {
+    max-width: 190px;
+  }
+  /* The role line runs to two tracked uppercase lines on a phone. The title is
+     the part a recruiter scans for; the span is already the H1's own claim. */
+  .hero__role__span {
+    display: none;
+  }
+  /* Not left to `pointer: coarse` alone: a 320px-wide layout is a phone whether
+     or not the UA reports a coarse pointer, and this is the site's primary
+     action. The pointer query below still catches touch on larger screens. */
+  .hero__actions .btn {
+    min-height: 44px;
+  }
+}
+
+/* Below the two-column breakpoint the portrait moves into the region the scroll
+   cue is absolutely positioned in, and the two overprint: measured 65.5 × 18.4px
+   of intersection at both 390×844 and 320×568, with the figcaption winning on
+   z-index and garbling "Défiler". Absolute positioning is what makes the hero's
+   height and the cue's position independent, so on narrow screens the cue simply
+   rejoins the flow as the last element of the hero — where it also reads better,
+   arriving after the portrait rather than on top of it. */
+@media (max-width: 820px) {
+  .hero__scroll {
+    position: static;
+    min-height: 44px;
+    margin-top: clamp(1.5rem, 4vh, 2.5rem);
+  }
+}
+
+/* Touch: the CV download is the primary action of the whole site and it was a
+   32px-tall target. Promote the hero's controls to the 44px comfortable size
+   without touching their type or padding rhythm. */
+@media (pointer: coarse) {
+  .hero__actions .btn,
+  .nav__cta {
+    min-height: 44px;
+  }
+  .hero__scroll {
+    min-height: 44px;
+    align-items: center;
+  }
+}
+
 /* Short landscape viewports (13" laptops at ~720–860px tall). The hero is a
    full-height panel, so its scale has to answer to viewport HEIGHT as well as
    width — otherwise the CV button and the scroll cue fall below the fold, which
@@ -833,7 +953,7 @@ main {
     font-size: clamp(2.6rem, 0.4rem + 6.4vw, 6.4rem);
   }
   .hero__portrait {
-    max-width: clamp(170px, 25vh, 285px);
+    max-width: clamp(170px, 25vh, 310px);
   }
   .hero__topline {
     margin-bottom: 1rem;
@@ -862,6 +982,22 @@ main {
     grid-template-columns: 0.32fr 0.68fr;
   }
 }
+.manifesto__body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3.5vw, 2.75rem);
+}
+.manifesto__title {
+  font-size: var(--fs-h3);
+  max-width: 20ch;
+}
+/* Reading measure, not display measure: this is the one place in the section
+   that carries concrete facts rather than a statement. */
+.manifesto__prose {
+  max-width: 62ch;
+  color: var(--bone-2);
+}
+
 .manifesto__text {
   font-family: var(--f-display);
   font-weight: 480;
@@ -1142,6 +1278,9 @@ main {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+  /* Same trap as .sec-head: `.cert__status` is nowrap and cannot shrink, so on a
+     320px viewport the card overflowed by 15px instead of stacking. */
+  flex-wrap: wrap;
   gap: 1rem;
 }
 .cert__name {
@@ -1177,7 +1316,9 @@ main {
   white-space: nowrap;
   margin-top: 0.35em;
   font-family: var(--f-mono);
-  font-size: 0.64rem;
+  /* was 0.64rem / 10.24px — under the readable floor for a tracked uppercase
+     mono label carrying real status ("En préparation") */
+  font-size: var(--fs-meta);
   font-weight: 600;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -1346,11 +1487,16 @@ main {
 .contact__mail {
   display: inline-block;
   font-family: var(--f-display);
-  font-size: clamp(1.6rem, 1rem + 3vw, 3.4rem);
+  /* An email address is one unbreakable token; at the old 1.6rem floor it ran
+     66px past a 320px viewport. The floor drops and the box is allowed to break
+     rather than push the document sideways. */
+  font-size: clamp(1.15rem, 0.7rem + 2.6vw, 3.4rem);
   font-weight: 520;
   letter-spacing: -0.02em;
   margin-top: clamp(2rem, 5vw, 3.5rem);
   position: relative;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .contact__mail::after {
   content: "";
@@ -1381,7 +1527,7 @@ main {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-.contact__col h4 {
+.contact__col h3 {
   font-family: var(--f-mono);
   font-size: var(--fs-meta);
   letter-spacing: 0.2em;
@@ -1428,7 +1574,10 @@ main {
   justify-content: center;
   gap: 0.5rem;
   font-family: var(--f-mono);
-  font-size: var(--fs-meta);
+  /* Off --fs-meta: the site's primary action was set at 11.52px, the same token
+     as figcaptions and decorative labels. A CTA should not share a size with the
+     smallest type on the page. */
+  font-size: var(--fs-small);
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0.14em;
@@ -1440,7 +1589,8 @@ main {
   padding: 0.72em 1.2em 0.72em 1.34em;
   transition: color 0.3s var(--ease), border-color 0.3s var(--ease),
     background 0.3s var(--ease);
-  will-change: transform;
+  /* no will-change: nothing here transforms, and a permanent compositor-layer
+     hint for a colour transition is pure cost */
 }
 .btn:hover {
   color: var(--ink);
@@ -1458,150 +1608,53 @@ main {
 }
 
 /* ============================================================================
-   VIEWER CONTROLS — palette comparison + motion preference
-   Fixed bottom-right, and last in the DOM so they sit at the END of the tab
-   order instead of intercepting the path to the hero's CV button.
-   ============================================================================ */
-.controls {
-  position: fixed;
-  right: clamp(1rem, 2.5vw, 2rem);
-  bottom: clamp(1rem, 2.5vw, 1.75rem);
-  z-index: 95;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Shared pill chrome */
-.controls__pill {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.3rem 0.6rem;
-  background: color-mix(in srgb, var(--ink) 82%, transparent);
-  border: 1px solid var(--line-2);
-  border-radius: 100px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-.controls__label {
-  font-family: var(--f-mono);
-  font-size: var(--fs-meta);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--bone-3);
-  padding-left: 0.15rem;
-}
-
-/* Palette switcher — live comparison of the accent directions.
-   The button box is the 24px WCAG 2.5.8 target; the 18px dot is drawn inside
-   it, so the visual weight is unchanged while the target is compliant. */
-.palette-switch__sw {
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: none;
-  background: none;
-  border-radius: 50%;
-}
-.palette-switch__sw::before {
-  content: "";
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--sw);
-  border: 1px solid color-mix(in srgb, var(--bone) 30%, transparent);
-  transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
-}
-.palette-switch__sw:hover::before {
-  transform: scale(1.18);
-}
-.palette-switch__sw.is-active::before {
-  box-shadow: 0 0 0 2px var(--ink), 0 0 0 3px var(--bone);
-}
-
-/* Motion preference. The animated field is the default on every machine; this
-   is the visitor's way out of it. The icon IS the concept: a live signal that
-   flattens to a straight line when motion is reduced. */
-.motion-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.3rem 0.7rem 0.3rem 0.6rem;
-  min-height: 30px;
-  color: var(--bone-3);
-  transition: color 0.3s var(--ease);
-}
-.motion-toggle:hover {
-  color: var(--bone);
-}
-.motion-toggle[aria-pressed="true"] {
-  color: var(--signal);
-}
-.motion-toggle svg {
-  flex-shrink: 0;
-  overflow: visible;
-}
-.motion-toggle svg path {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  transition: opacity 0.35s var(--ease);
-}
-.motion-toggle__flat {
-  opacity: 0;
-}
-.motion-toggle[aria-pressed="true"] .motion-toggle__wave {
-  opacity: 0;
-}
-.motion-toggle[aria-pressed="true"] .motion-toggle__flat {
-  opacity: 1;
-}
-.motion-toggle .controls__label {
-  padding-left: 0;
-  color: inherit;
-}
-
-/* Touch: promote every control to the 44px comfortable target. */
-@media (pointer: coarse) {
-  .palette-switch__sw {
-    width: 44px;
-    height: 44px;
-  }
-  .motion-toggle {
-    min-height: 44px;
-  }
-}
-@media (max-width: 520px) {
-  .palette-switch .controls__label,
-  .motion-toggle .controls__label {
-    display: none;
-  }
-}
-
-/* ============================================================================
    REDUCED MOTION
-   Driven by the visitor's explicit choice (data-motion), never by the OS
-   setting: too many machines report prefers-reduced-motion by default, which
-   used to blank the intro for people who had not asked for that. See
-   src/lib/motion.js. Looping ambient motion and scroll-coupled motion stop;
-   hover/focus feedback stays, because that is information, not decoration.
+   Two triggers, deliberately doing different amounts.
+
+   `data-motion="reduced"` is the full calm: every looping and scroll-coupled
+   motion stops. It is the switch to reach for if a visitor control ever comes
+   back (see src/lib/motion.js).
+
+   `prefers-reduced-motion: reduce` used to be ignored outright, because too many
+   Windows machines report `reduce` without their owner ever asking and it blanked
+   the whole intro. But ignoring it left NOTHING that could stop two perpetual
+   animations — the drifting field and the scroll cue — which is a WCAG 2.2.2
+   Level A failure, not a taste question. So the OS signal now stops exactly the
+   perpetual motion and leaves the one-shot arrival choreography alone: the
+   original complaint is answered without holding the accessible behaviour hostage
+   to it. The JS half (field drift, per-glyph light) is gated in lib/drift.js.
+
+   Hover and focus feedback stays under both — that is information, not decoration.
    ============================================================================ */
 :root[data-motion="reduced"] .nav__mark b,
-:root[data-motion="reduced"] .cert__status::before {
+:root[data-motion="reduced"] .cert__status::before,
+:root[data-motion="reduced"] .hero__scroll .line-y::after {
   animation: none;
   opacity: 1;
   transform: none;
 }
 :root[data-motion="reduced"] .hero__scroll .line-y::after {
-  animation: none;
-  transform: none;
   opacity: 0.5;
 }
 :root[data-motion="reduced"] .section::before {
   transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav__mark b,
+  .cert__status::before {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .hero__scroll .line-y::after {
+    animation: none;
+    transform: none;
+    opacity: 0.5;
+  }
+  /* The signature holds whatever the light left it at instead of being raked
+     continuously; lib/drift.js stops advancing the clock that drives it. */
+  .hero__g {
+    transition: none;
+  }
 }

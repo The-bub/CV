@@ -27,3 +27,6 @@ dist-ssr
 # — ne doivent jamais être suivis, même s'ils atterrissent dans ce dossier
 OLD-CV/
 Export-Linkedin/
+
+# Snapshots locaux de /impeccable critique — historique de session, pas du code
+.impeccable/

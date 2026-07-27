@@ -3,28 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-      // Apply the saved palette and motion preference before paint, so a
-      // returning visitor never sees a flash of the wrong theme — or a frame of
-      // motion they have asked not to see.
       (function () {
-        var r = document.documentElement;
         // The intro loader locks the page at 100vh while it plays, so Lenis and
         // ScrollTrigger would both measure a clamped document if the browser
         // restored a previous scroll offset — leaving the scroll dead and every
         // section stuck at opacity 0 after a reload further down the page.
         // Own the entry point instead; App restores any #hash once handed over.
         if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-        try {
-          var p = localStorage.getItem("cv-palette");
-          if (p === "vermillon" || p === "platine")
-            r.setAttribute("data-palette", p);
-          r.setAttribute(
-            "data-motion",
-            localStorage.getItem("cv-motion") === "reduced" ? "reduced" : "full",
-          );
-        } catch (e) {
-          r.setAttribute("data-motion", "full");
-        }
+        // The palette switcher and motion toggle are gone, so nothing reads the
+        // old `cv-palette` / `cv-motion` keys any more: a returning visitor who
+        // had stored a choice would otherwise be stuck with it for good. Sapin
+        // and full motion are now simply the site.
+        document.documentElement.setAttribute("data-motion", "full");
       })();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

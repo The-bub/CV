@@ -1,6 +1,8 @@
 // "Champ de risque" — a domain-warped noise field rendered as flowing
 // topographic contour lines. Conceptually: noise organising into order
-// (signal from noise). The cursor perturbs the field; it self-heals.
+// (signal from noise). A focal point drifts across the field on its own,
+// perturbing it as it passes; the field self-heals behind it. Nothing here
+// responds to the pointer — the drift is driven from JS (see Field.jsx).
 //
 // Authored for THREE.ShaderMaterial (GLSL ES 1.00). A full-screen quad is
 // drawn by passing clip-space positions straight through the vertex stage.
@@ -20,8 +22,8 @@ export const fragmentShader = /* glsl */ `
 
   uniform float uTime;      // seconds
   uniform vec2  uResolution;
-  uniform vec2  uMouse;     // smoothed, in uv space (0..1)
-  uniform float uMouseForce;// 0..1, decays after movement
+  uniform vec2  uFocus;     // drifting focal point, in uv space (0..1)
+  uniform float uFocusForce;// 0..1, breathes as the point wanders
   uniform float uReveal;    // 0 = chaotic (loading) -> 1 = settled
   uniform float uScroll;    // 0..1 scroll progress
   uniform float uFlow;      // animation phase — advances only near the hero (JS-driven)
@@ -96,11 +98,11 @@ export const fragmentShader = /* glsl */ `
     // so the fixed field stops "tangage" behind the reading content.
     float heroZone = 1.0 - smoothstep(0.02, 0.16, uScroll);
 
-    // Cursor ripple: push the field outward from the pointer, self-healing
-    vec2 m = uMouse; m.x *= aspect;
+    // Drift ripple: push the field outward from the focal point, self-healing
+    vec2 m = uFocus; m.x *= aspect;
     vec2 toM = p - m;
     float md = length(toM);
-    float ripple = uMouseForce * exp(-md * 5.5) * heroZone;
+    float ripple = uFocusForce * exp(-md * 5.5) * heroZone;
     p += normalize(toM + 1e-4) * ripple * 0.06;
 
     // Turbulence eases as the site reveals (loader -> hero)
@@ -127,17 +129,19 @@ export const fragmentShader = /* glsl */ `
     vec3 base = mix(SHADOW, INK_DEEP, relief);
     base = mix(base, INK_WARM, smoothstep(0.72, 1.0, h) * 0.45);
 
-    // Signal glow — faint by default, blooms around the cursor (hero only)
-    float near = exp(-md * 3.2) * uMouseForce * heroZone;
+    // Signal glow — faint by default, blooms around the focal point (hero only).
+    // The bloom is dimmer than it was when the pointer drove it: now that it is
+    // always on screen it has to read as weather, not as a headlight.
+    float near = exp(-md * 3.2) * uFocusForce * heroZone;
     float energy = (0.22 + 0.17 * relief) * mix(0.5, 0.92, uReveal);
-    energy += near * 0.8;
-    vec3 lineColor = mix(SIGNAL, EMBER, relief * 0.35 + near * 0.6);
+    energy += near * 0.42;
+    vec3 lineColor = mix(SIGNAL, EMBER, relief * 0.35 + near * 0.4);
 
     vec3 col = base + lineColor * line * energy;
-    col += lineColor * pow(line, 3.0) * 0.18 * near;
+    col += lineColor * pow(line, 3.0) * 0.09 * near;
 
-    // Cursor aura
-    col += SIGNAL * near * 0.035;
+    // Focal aura
+    col += SIGNAL * near * 0.018;
 
     // Vignette keeps the edges dark for legible text
     vec2 vc = uv - 0.5;

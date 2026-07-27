@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState, lazy, Suspense } from "react"
 import { ScrollTrigger } from "./lib/gsap";
 import { scrollTo } from "./lib/scroll";
 import GrainOverlay from "./components/GrainOverlay";
-import Cursor from "./components/Cursor";
 import Loader from "./components/Loader";
 import SmoothScroll from "./components/SmoothScroll";
 import Nav from "./components/Nav";
@@ -13,8 +12,6 @@ import Skills from "./components/Skills";
 import Certifications from "./components/Certifications";
 import Education from "./components/Education";
 import Contact from "./components/Contact";
-import PaletteSwitcher from "./components/PaletteSwitcher";
-import MotionToggle from "./components/MotionToggle";
 
 // Three.js is heavy and purely decorative — stream it in behind the loader.
 const Field = lazy(() => import("./components/Field"));
@@ -76,7 +73,6 @@ function App() {
         <Field revealRef={revealRef} />
       </Suspense>
       <GrainOverlay />
-      <Cursor />
       <Loader onComplete={handleComplete} revealRef={revealRef} />
 
       <Nav />
@@ -91,13 +87,6 @@ function App() {
           <Contact />
         </main>
       </SmoothScroll>
-
-      {/* After <main> on purpose: these sit at the end of the tab order rather
-          than between the nav and the hero's CV button. */}
-      <div className="controls">
-        <PaletteSwitcher />
-        <MotionToggle />
-      </div>
     </>
   );
 }

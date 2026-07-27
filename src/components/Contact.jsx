@@ -1,11 +1,8 @@
 import { profile } from "../data";
 import Reveal from "./Reveal";
-import { useMagnetic } from "../lib/useMagnetic";
 import { scrollTo } from "../lib/scroll";
 
 export default function Contact() {
-  const mailRef = useMagnetic(0.18);
-
   return (
     <>
       <section className="section contact" id="contact">
@@ -15,18 +12,14 @@ export default function Contact() {
             <h2 className="contact__lead">
               Traduisons la complexité en <em>décisions</em>.
             </h2>
-            <a
-              className="contact__mail"
-              href={`mailto:${profile.contact.email}`}
-              ref={mailRef}
-            >
+            <a className="contact__mail" href={`mailto:${profile.contact.email}`}>
               {profile.contact.email}
             </a>
           </Reveal>
 
           <Reveal className="contact__grid" stagger={0.1} selector=".contact__col" y={24}>
             <div className="contact__col">
-              <h4>Réseau</h4>
+              <h3>Réseau</h3>
               <a
                 href={profile.contact.linkedin}
                 target="_blank"
@@ -36,7 +29,7 @@ export default function Contact() {
               </a>
             </div>
             <div className="contact__col">
-              <h4>Localisation</h4>
+              <h3>Localisation</h3>
               <a
                 href={profile.contact.maps}
                 target="_blank"
@@ -46,7 +39,7 @@ export default function Contact() {
               </a>
             </div>
             <div className="contact__col">
-              <h4>Disponibilité</h4>
+              <h3>Disponibilité</h3>
               <p>Ouvert aux opportunités</p>
               <p style={{ color: "var(--bone-2)" }}>GRC · Red Team · Conseil</p>
             </div>
