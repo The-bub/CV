@@ -10,6 +10,7 @@ import {
   subscribeDrift,
   isFieldLive,
   onFieldLive,
+  holdStill,
 } from "../lib/drift";
 import portrait from "../assets/eliot-bedel-2026-v2.jpg";
 
@@ -25,16 +26,25 @@ const STATS = [
 // and be lit individually as the field's light passes behind it — every glyph is
 // its own measuring point. `thin` marks the Fraunces italic segment.
 //
-// It carries the argument, not the job title: "Ingénieur cybersécurité" is the
-// category the visitor already read on the LinkedIn headline they arrived from,
-// and it is interchangeable with tens of thousands of profiles. The 360° claim
-// is the hinge — offensive and governance as one span — and it is the site's own
-// vocabulary (see the §01 stat). The title itself moves to the role line below.
+// It carries the argument, not the job title: "Ingénieur cybersécurité" is a
+// category shared with tens of thousands of profiles, and it stays available on
+// the role line below.
+//
+// It also is not "Vision 360° du risque cyber", which this replaced: a claim no
+// competitor would ever deny is a claim that transmits nothing, and it was the
+// verbal twin of the padlock icons the art direction refuses. The hinge is the
+// one thing here that cannot be copied without lying — a pentester cannot claim
+// gouvernance, a GRC consultant cannot claim offensive. "Vision 360°" survives
+// where it is earned by data, in the §01 stat.
+//
+// The two-register split finally lands on a real seam: two poles, two voices.
+// Across "Vision 360°" / "du risque cyber" it was cutting a noun from its own
+// genitive complement, so the contrast meant nothing.
 const TITLE_LINES = [
-  [{ text: "Vision 360°" }],
-  [{ text: "du risque cyber", thin: true }],
+  [{ text: "De l'offensive" }],
+  [{ text: "à la gouvernance", thin: true }],
 ];
-const TITLE_TEXT = "Vision 360° du risque cyber";
+const TITLE_TEXT = "De l'offensive à la gouvernance";
 
 // Deterministic per-glyph jitter. Not Math.random: the offsets must survive a
 // re-render, or a second render would reshuffle a running animation.
@@ -105,9 +115,12 @@ export default function Hero({ ready }) {
       rotate: 0,
       ...(blurAffordable ? { filter: "blur(0px)" } : null),
       opacity: 1,
-      duration: 1.15,
+      // Was 1.15s / 0.021 stagger, which put the last glyph at ~4.3s on a first
+      // visit once the loader is counted — a fifth of the attention budget spent
+      // watching letters unscramble.
+      duration: 0.8,
       ease: "expo.out",
-      stagger: { each: 0.021, from: "random" },
+      stagger: { each: 0.012, from: "random" },
       // Blur is the expensive half of this; drop the hint the moment it lands
       // so 23 glyphs are not left promoted to their own layers for the session.
       onComplete: () => gsap.set(glyphs, { clearProps: "filter,willChange" }),
@@ -133,7 +146,14 @@ export default function Hero({ ready }) {
   useEffect(() => onFieldLive(setFieldLiveState), []);
 
   useEffect(() => {
-    if (!ready || !fieldLive || prefersReducedMotion()) return;
+    // `holdStill()`, not `prefersReducedMotion()`: the latter reads `data-motion`,
+    // which no longer has a control and is always "full". Gating on it meant that
+    // under an OS reduce preference this effect still ran — against a clock
+    // drift.js had already frozen — and wrote one arbitrary per-letter brightness
+    // ramp that then never changed. A static uneven gradient across a headline
+    // reads as a broken text-shadow, not as craft; the one audience that cannot
+    // be shown the motion is the one that most needs the type left alone.
+    if (!ready || !fieldLive || holdStill()) return;
     const el = rootRef.current;
     const title = titleRef.current;
     if (!el || !title) return;
@@ -240,11 +260,13 @@ export default function Hero({ ready }) {
           ))}
         </h1>
 
+        {/* Just the category now: the hinge moved up into the H1. It used to
+            carry both, which meant the site's most informative sentence sat in
+            14px tracked uppercase mono — and was `display:none`d on phones, the
+            primary device, deleting the differentiator exactly where it was
+            needed most. */}
         <p className="hero__role" data-in>
           Ingénieur cybersécurité
-          <span className="hero__role__span">
-            {" · de l'offensive à la gouvernance"}
-          </span>
         </p>
 
         <div className="hero__lower">

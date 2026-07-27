@@ -115,6 +115,25 @@ export default function Manifesto() {
           </div>
 
           <div className="manifesto__body">
+            {/* The scrubbed statement opens the panel; the heading and the
+                concrete detail land under it, so the section reads claim first,
+                evidence second rather than announcing itself twice. */}
+            <p className="manifesto__text" ref={textRef}>
+              {TOKENS.map((tok, i) => {
+                const isEm = typeof tok === "object";
+                const text = isEm ? tok.t : tok;
+                return (
+                  <span className="word" key={i}>
+                    {isEm ? <em>{text}</em> : text}
+                    {/* Real space, not a margin: the words are inline-blocks, so
+                        without it textContent joins into "Pendanttroisans," and
+                        copy-paste and find-in-page lose the sentence. */}
+                    {i < TOKENS.length - 1 ? " " : null}
+                  </span>
+                );
+              })}
+            </p>
+
             {/* The section had no heading of its own — only a mono block-label —
                 so the document went h1 → h2 (Parcours) with this panel silent. */}
             <h2 className="manifesto__title" data-mi>
@@ -126,18 +145,6 @@ export default function Manifesto() {
               j'accompagne l'identification et la maîtrise des risques sur des
               périmètres applicatifs et des activités critiques, pour offrir une
               vision 360° du risque cyber.
-            </p>
-
-            <p className="manifesto__text" ref={textRef}>
-              {TOKENS.map((tok, i) => {
-                const isEm = typeof tok === "object";
-                const text = isEm ? tok.t : tok;
-                return (
-                  <span className="word" key={i}>
-                    {isEm ? <em>{text}</em> : text}
-                  </span>
-                );
-              })}
             </p>
           </div>
         </div>

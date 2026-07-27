@@ -47,6 +47,26 @@ ul {
   color: var(--ink);
 }
 
+/* Metric-matched fallback for Fraunces italic.
+   Fraunces italic sets the hero's second line at 5.436× its font-size; Georgia
+   italic sets the same string at 7.427× — 37% wider. The hero's size guard was
+   derived from Fraunces alone, so during every `font-display: swap` window (and
+   permanently if the webfont fails) the signature overflowed its mask and was
+   silently cut mid-word. `size-adjust` scales the fallback to Fraunces' measure
+   so the swap costs no width at all.
+   91% is set from the SMALL end, not the display end: Fraunces has an optical
+   size axis and widens as it shrinks (6.988× at 30px vs 5.606× at 131px), while
+   Georgia is flat at 7.61×. Matching at 131px would have let the fallback run
+   wider than Fraunces ever gets at phone sizes — exactly where the hero's size
+   guard binds and where an overflow would show. 7.61 × 0.91 = 6.93, just inside
+   Fraunces' own worst case. */
+@font-face {
+  font-family: "Fraunces fallback";
+  src: local("Georgia Italic"), local("Georgia"), local("Times New Roman Italic");
+  font-style: italic;
+  size-adjust: 91%;
+}
+
 /* ---- Tokens -------------------------------------------------------------- */
 :root {
   /* Palette par défaut — vert sapin & platine (encre vert-noir, accent épicéa) */
@@ -75,7 +95,8 @@ ul {
   --f-display: "Bricolage Grotesque Variable", "Bricolage Grotesque",
     system-ui, sans-serif;
   --f-body: "Inter Variable", "Inter", system-ui, sans-serif;
-  --f-serif: "Fraunces Variable", "Fraunces", Georgia, serif;
+  --f-serif: "Fraunces Variable", "Fraunces", "Fraunces fallback", Georgia,
+    serif;
   --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", monospace;
 
   /* Fluid scale (min .. max) */
@@ -604,22 +625,34 @@ main {
 }
 
 .hero__title {
-  /* The guard matters because of the two rules below: the glyphs are separate
-     inline-blocks held on one line by `nowrap`, inside a mask that clips. An
-     overflow would silently amputate the signature rather than wrap it.
-     Measured live: "Vision 360°" is 5.033× its font-size and "du risque cyber"
-     4.841×, so 5.03 is the binding line; dividing by 5.5 leaves ~9% for
-     webfont-fallback drift during `font-display: swap`.
-     RE-MEASURE THIS IF THE SIGNATURE COPY CHANGES — an earlier draft of this
-     title ran to 6.92× and would have been clipped by the old divisor. */
-  font-size: min(var(--fs-mega), calc((100vw - 2 * var(--gutter)) / 5.5));
+  /* The glyphs are separate inline-blocks held on one line by `nowrap`, so the
+     signature cannot wrap — it can only overflow.
+
+     The width-per-font-size ratio is NOT scale-invariant, which is the trap
+     here. Fraunces carries an optical-size axis and `font-optical-sizing: auto`
+     widens its letterforms as the type gets smaller, so "à la gouvernance"
+     measures 5.606× at 131px but 6.988× at 30px. A divisor derived from a
+     desktop measurement is therefore meaningless at the only sizes where the
+     guard actually binds. Measured across 30–131px: line 1 (Bricolage) is flat
+     at 6.152×, line 2 peaks at 6.988×. 7.2 covers the worst with ~3% headroom.
+     The metric-matched @font-face at the top of this file keeps the Georgia
+     fallback inside the same bound.
+     RE-MEASURE ACROSS THE WHOLE SIZE RANGE IF THE SIGNATURE COPY CHANGES. */
+  font-size: min(var(--fs-mega), calc((100vw - 2 * var(--gutter)) / 7.2));
   font-weight: 600;
   line-height: 0.9;
   letter-spacing: -0.04em;
 }
 .hero__title .line {
   display: block;
-  overflow: hidden;
+  /* The reveal mask has to hide glyphs parked BELOW the line during the arrival,
+     which is a vertical job — but `overflow: hidden` clips horizontally too, and
+     that is what turned a metric surprise into a signature amputated mid-word
+     with no visible symptom. clip-path masks only the vertical axis and lets the
+     horizontal run free, so the same surprise now shows itself instead of
+     hiding. (`body` already has `overflow-x: hidden`, so it cannot become a
+     horizontal scrollbar.) */
+  clip-path: inset(0 -50vw);
   /* room for descenders (g, y…) inside the reveal-mask clip box */
   padding-bottom: 0.16em;
   margin-bottom: -0.08em;
@@ -646,29 +679,36 @@ main {
   initial-value: 0;
   inherits: false;
 }
-/* The signature needs dynamic range, and at full --bone there is no headroom to
-   brighten into — so the resting state sits a step back into the ink and the
-   light brings each letter up out of it. That IS the concept: the signal
-   surfacing as it passes. Recessed platinum still clears ~9:1 on this ink, far
-   above the 3:1 large-text floor, so nothing is traded for legibility. */
+/* The signature's dynamic range is bought at the TOP, not by darkening the base.
+   The earlier version recessed the resting colour 30% into the ink to leave the
+   light somewhere to rise from, and justified it as "still ~9:1". Measured, it
+   was 7.21:1 for line 1 and 4.84:1 for the italic line — which made the 131px H1
+   the dimmest text on the page, below a 14px mono caption and well below the
+   25.6px lead at 15.38:1. Size alone was carrying it while every colour cue said
+   "subordinate", and PRODUCT.md ranks legibility above decoration explicitly.
+   It also charged that deficit to everyone in order to fund a payoff that some
+   never see: no-WebGL visitors get `--lit: 0` forever, and the drift leaves the
+   whole title under 0.12 lit for ~21s stretches.
+   So the resting state is now full strength, and the light overshoots past it
+   into --lit-hi plus bloom. Same effect, no legibility traded for it. */
 .hero__g {
   display: inline-block;
   --lit: 0;
-  color: color-mix(
-    in oklab,
-    color-mix(in oklab, var(--bone), var(--ink) 30%),
-    var(--lit-hi) calc(var(--lit) * 100%)
-  );
+  color: color-mix(in oklab, var(--bone), var(--lit-hi) calc(var(--lit) * 100%));
   /* Light on a surface is brightness AND bloom. `--lit` squared keeps the glow
      out of the mid-range, so it only blooms at the crest of a pass instead of
      leaving a permanent haze on the signature. */
   text-shadow: 0 0 calc(var(--lit) * var(--lit) * 0.4em)
     color-mix(in srgb, var(--signal-2) calc(var(--lit) * 55%), transparent);
 }
+/* The italic line took a triple penalty — lighter colour, weight 300, and a
+   high-contrast serif whose hairlines go first — all landing on the half of the
+   sentence that carries the meaning. It keeps its own tone, but no dimmer than
+   the role line beneath it. */
 .hero__title .thin .hero__g {
   color: color-mix(
     in oklab,
-    color-mix(in oklab, var(--bone-2), var(--ink) 26%),
+    color-mix(in oklab, var(--bone), var(--bone-2) 55%),
     var(--lit-hi) calc(var(--lit) * 100%)
   );
 }
@@ -772,10 +812,9 @@ main {
   .hero__portrait {
     justify-self: end;
     align-self: end;
-    /* More presence on desktop nav — the grid column has room (~378px at
-       1440px, see .hero__lower's 0.42fr) well past this cap. Capped at 310
-       rather than higher: 340 pushed the hero 61px past a 1440×900 fold. */
-    max-width: 310px;
+    /* Fills the grid track (~376px at 1440px, see .hero__lower's 0.42fr) —
+       21% wider than the 310px it replaces. */
+    max-width: 376px;
   }
 }
 .hero__portrait img {
@@ -787,6 +826,17 @@ main {
   border: 1px solid var(--line-2);
   filter: grayscale(1) sepia(0.3) brightness(0.94) contrast(1.05);
   transition: filter 0.6s var(--ease);
+}
+/* Square on desktop, and that is what buys the width — declared after the base
+   rule on purpose, same specificity. At 4/5 the extra width came straight back
+   as height (376px wide meant 470px tall) and pushed the CV button off a
+   1440×900 fold; square is 376px tall, i.e. slightly SHORTER than the 387px it
+   replaces. The source is 4:3 landscape, so the square crop discards less than
+   the portrait crop did. */
+@media (min-width: 820px) {
+  .hero__portrait img {
+    aspect-ratio: 1 / 1;
+  }
 }
 .hero__portrait::after {
   content: "";
@@ -900,11 +950,6 @@ main {
   .hero__portrait {
     max-width: 190px;
   }
-  /* The role line runs to two tracked uppercase lines on a phone. The title is
-     the part a recruiter scans for; the span is already the H1's own claim. */
-  .hero__role__span {
-    display: none;
-  }
   /* Not left to `pointer: coarse` alone: a 320px-wide layout is a phone whether
      or not the UA reports a coarse pointer, and this is the site's primary
      action. The pointer query below still catches touch on larger screens. */
@@ -1008,7 +1053,9 @@ main {
 }
 .manifesto__text .word {
   display: inline-block;
-  margin-right: 0.26em; /* inline-block collapses whitespace — restore word gaps */
+  /* The gap is a real space inside the span (see Manifesto.jsx), not a margin,
+     so the sentence survives copy-paste and find-in-page. */
+  white-space: pre-wrap;
   will-change: transform, opacity;
 }
 .manifesto__text em {

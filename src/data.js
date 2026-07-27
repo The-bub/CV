@@ -211,6 +211,7 @@ export const hobbies = {
     "Jeux vidéo compétitif",
     "Bénévole événementiel (BZHack)",
     "Piano",
+    "Finance",
     "Blockchain",
     "Macro-économie",
   ],

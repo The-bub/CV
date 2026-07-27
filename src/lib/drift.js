@@ -56,7 +56,7 @@ const osReduce =
   typeof window !== "undefined" && window.matchMedia
     ? window.matchMedia("(prefers-reduced-motion: reduce)")
     : null;
-const holdStill = () => isReduced() || !!osReduce?.matches;
+export const holdStill = () => isReduced() || !!osReduce?.matches;
 
 const tick = (now) => {
   raf = requestAnimationFrame(tick);

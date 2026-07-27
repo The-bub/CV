@@ -8,10 +8,6 @@ const LINKS = [
   { id: "#certifications", label: "Titres", hideable: true },
 ];
 
-// La V4 est le site principal (racine). Quand la V5 est servie en secondaire
-// sous /v5/, ce lien renvoie au site principal à la racine.
-const V4_URL = "/";
-
 export default function Nav() {
   const navRef = useRef(null);
   const [active, setActive] = useState("");
@@ -80,9 +76,6 @@ export default function Nav() {
             {l.label}
           </a>
         ))}
-        <a className="nav__version nav__hideable" href={V4_URL}>
-          V4 <span aria-hidden="true">↗</span>
-        </a>
         <a href="#contact" onClick={(e) => go(e, "#contact")} className="nav__cta">
           Contact
           <svg
