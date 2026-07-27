@@ -1,68 +1,333 @@
-import photo from "../assets/eliot-bedel-2026-v2.jpg";
-import { profile } from "../data";
-import BlurText from "./BlurText";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { gsap, prefersReducedMotion } from "../lib/gsap";
+import { scrollTo } from "../lib/scroll";
+import {
+  focusX,
+  focusY,
+  focusForce,
+  FORCE_MAX,
+  driftClock,
+  subscribeDrift,
+  isFieldLive,
+  onFieldLive,
+  holdStill,
+} from "../lib/drift";
+import portrait from "../assets/eliot-bedel-2026-v2.jpg";
 
-export default function Hero() {
+const CV_URL = "/eliot-bedel-cv.pdf";
+
+const STATS = [
+  { k: "9", v: "ans IT & cybersécurité" },
+  { k: "3", v: "ans en sécurité offensive" },
+  { k: "2×", v: "2ᵉ place en CTF" },
+];
+
+// The signature. Split per glyph so each letter can arrive out of registration
+// and be lit individually as the field's light passes behind it — every glyph is
+// its own measuring point. `thin` marks the Fraunces italic segment.
+//
+// It carries the argument, not the job title: "Ingénieur cybersécurité" is a
+// category shared with tens of thousands of profiles, and it stays available on
+// the role line below.
+//
+// It also is not "Vision 360° du risque cyber", which this replaced: a claim no
+// competitor would ever deny is a claim that transmits nothing, and it was the
+// verbal twin of the padlock icons the art direction refuses. The hinge is the
+// one thing here that cannot be copied without lying — a pentester cannot claim
+// gouvernance, a GRC consultant cannot claim offensive. "Vision 360°" survives
+// where it is earned by data, in the §01 stat.
+//
+// The two-register split finally lands on a real seam: two poles, two voices.
+// Across "Vision 360°" / "du risque cyber" it was cutting a noun from its own
+// genitive complement, so the contrast meant nothing.
+const TITLE_LINES = [
+  [{ text: "De l'offensive" }],
+  [{ text: "à la gouvernance", thin: true }],
+];
+const TITLE_TEXT = "De l'offensive à la gouvernance";
+
+// Deterministic per-glyph jitter. Not Math.random: the offsets must survive a
+// re-render, or a second render would reshuffle a running animation.
+const jitter = (i, k) => {
+  const n = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453;
+  return n - Math.floor(n);
+};
+
+/** Flatten the lines into positioned glyph descriptors, numbered across the whole title. */
+function buildGlyphs() {
+  let n = 0;
+  return TITLE_LINES.map((segments) =>
+    segments.map((seg) => ({
+      thin: seg.thin,
+      chars: [...seg.text].map((ch) => ({ ch, i: n++ })),
+    })),
+  );
+}
+
+// Spaces stay plain text nodes rather than glyph spans: an inline-block holding
+// only a space collapses to zero width, and an &nbsp; would put U+00A0 into the
+// text layer, so copy-paste and find-in-page would miss a typed space.
+const isSpace = (ch) => ch === " ";
+
+export default function Hero({ ready }) {
+  const rootRef = useRef(null);
+  const titleRef = useRef(null);
+  const lines = useMemo(buildGlyphs, []);
+
+  // ---- Arrival: the title resolves out of misregistration -------------------
+  useLayoutEffect(() => {
+    if (prefersReducedMotion()) return;
+    const el = rootRef.current;
+    if (!el) return;
+
+    const glyphs = el.querySelectorAll(".hero__g");
+    const ins = el.querySelectorAll("[data-in]");
+
+    // Animating filter on 22 glyphs at once is the expensive half of the
+    // resolve, and on a phone the glyphs are small enough that the blur barely
+    // reads — so small screens get the same choreography without it rather than
+    // a janky version of it.
+    const blurAffordable = window.matchMedia("(min-width: 640px)").matches;
+
+    // Pre-state, not a resting state: the CSS default is the finished
+    // composition, so a failed script leaves the hero readable and aligned.
+    const scatter = {
+      yPercent: (i) => 60 + jitter(i, 1) * 70,
+      xPercent: (i) => (jitter(i, 2) - 0.5) * 44,
+      rotate: (i) => (jitter(i, 3) - 0.5) * 13,
+      opacity: 0,
+      willChange: blurAffordable ? "transform, filter" : "transform",
+    };
+    if (blurAffordable) {
+      scatter.filter = (i) => `blur(${4 + jitter(i, 4) * 7}px)`;
+    }
+
+    if (!ready) {
+      gsap.set(glyphs, scatter);
+      gsap.set(ins, { opacity: 0, y: 24 });
+      return;
+    }
+
+    const tl = gsap.timeline({ delay: 0.12 });
+    tl.to(glyphs, {
+      yPercent: 0,
+      xPercent: 0,
+      rotate: 0,
+      ...(blurAffordable ? { filter: "blur(0px)" } : null),
+      opacity: 1,
+      // Was 1.15s / 0.021 stagger, which put the last glyph at ~4.3s on a first
+      // visit once the loader is counted — a fifth of the attention budget spent
+      // watching letters unscramble.
+      duration: 0.8,
+      ease: "expo.out",
+      stagger: { each: 0.012, from: "random" },
+      // Blur is the expensive half of this; drop the hint the moment it lands
+      // so 23 glyphs are not left promoted to their own layers for the session.
+      onComplete: () => gsap.set(glyphs, { clearProps: "filter,willChange" }),
+    });
+    // Absolute position, not relative to the glyph tween: chained off the end of
+    // the resolve, the CV button waited on 22 letters it has nothing to do with
+    // and landed ~6.1s after load. It now rides alongside them.
+    tl.to(
+      ins,
+      { opacity: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.07 },
+      0.15,
+    );
+    return () => tl.kill();
+  }, [ready]);
+
+  // ---- Ambient: the field's light rakes the type ----------------------------
+  // Each glyph brightens by its distance to the drifting focal point. No pointer
+  // input anywhere: this is the background's own light, arriving in the
+  // foreground — which is exactly why it must not run when the field is not
+  // there to be its source. The Field is lazy, so this waits for it to report in
+  // rather than sampling once and giving up.
+  const [fieldLive, setFieldLiveState] = useState(isFieldLive);
+  useEffect(() => onFieldLive(setFieldLiveState), []);
+
+  useEffect(() => {
+    // `holdStill()`, not `prefersReducedMotion()`: the latter reads `data-motion`,
+    // which no longer has a control and is always "full". Gating on it meant that
+    // under an OS reduce preference this effect still ran — against a clock
+    // drift.js had already frozen — and wrote one arbitrary per-letter brightness
+    // ramp that then never changed. A static uneven gradient across a headline
+    // reads as a broken text-shadow, not as craft; the one audience that cannot
+    // be shown the motion is the one that most needs the type left alone.
+    if (!ready || !fieldLive || holdStill()) return;
+    const el = rootRef.current;
+    const title = titleRef.current;
+    if (!el || !title) return;
+
+    const glyphs = [...el.querySelectorAll(".hero__g")];
+    // Measured once per resize, not per frame: reading a rect in a rAF that
+    // also writes styles is the classic layout-thrash trap.
+    let boxes = [];
+    let vw = 1;
+    let vh = 1;
+    const measure = () => {
+      vw = window.innerWidth;
+      vh = window.innerHeight;
+      const t = title.getBoundingClientRect();
+      boxes = glyphs.map((g) => {
+        const r = g.getBoundingClientRect();
+        return {
+          // Centre of the glyph, in viewport fractions.
+          cx: (r.left + r.width / 2) / vw,
+          cy: (r.top + r.height / 2) / vh,
+        };
+      });
+      return t;
+    };
+    measure();
+    window.addEventListener("resize", measure);
+
+    const stop = subscribeDrift();
+    // Falloff in x is wider than in y: the light travels along the line like a
+    // beam rather than washing the block, but it has to stay broad enough that
+    // neighbouring glyphs differ instead of one letter flaring alone. Measured:
+    // at these radii the lit/unlit spread across the signature peaks around
+    // 0.6, so the rake is legible.
+    const RX = 0.32;
+    const RY = 0.22;
+    const lit = new Array(glyphs.length).fill(-1);
+    let raf = requestAnimationFrame(function loop() {
+      raf = requestAnimationFrame(loop);
+      const t = driftClock();
+      const fx = focusX(t);
+      const fy = 1 - focusY(t); // field uv is y-up; the DOM is y-down
+      // Normalised so the crest of a pass reaches a full 1.0 on the type; the
+      // raw value would cap the signature at two-thirds lit.
+      const lightForce = focusForce(t) / FORCE_MAX;
+
+      for (let i = 0; i < glyphs.length; i++) {
+        const b = boxes[i];
+        if (!b) continue;
+        const dx = (b.cx - fx) / RX;
+        const dy = (b.cy - fy) / RY;
+        const d = dx * dx + dy * dy;
+        // Quantised to 24 steps: below that the paint is invisible and we would
+        // just be handing the compositor 23 no-op writes every frame.
+        const v = Math.round(Math.exp(-d) * lightForce * 24);
+        if (v !== lit[i]) {
+          lit[i] = v;
+          glyphs[i].style.setProperty("--lit", v / 24);
+        }
+      }
+    });
+
+    return () => {
+      cancelAnimationFrame(raf);
+      stop();
+      window.removeEventListener("resize", measure);
+      glyphs.forEach((g) => g.style.removeProperty("--lit"));
+    };
+  }, [ready, fieldLive]);
+
   return (
-    <section id="accueil" className="hero">
-      <svg className="hero__decor" viewBox="0 0 1200 800" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M-50 620 C 250 520, 450 720, 750 560 S 1150 480, 1260 600" fill="none" stroke="currentColor" strokeWidth="1" />
-        <path d="M-50 700 C 300 640, 500 800, 820 660 S 1200 600, 1300 700" fill="none" stroke="currentColor" strokeWidth="1" />
-        <path d="M900 -40 C 980 120, 860 220, 1000 340" fill="none" stroke="currentColor" strokeWidth="1" />
-      </svg>
+    <section className="hero" id="accueil" ref={rootRef}>
+      <div className="hero__wrap">
+        {/* "Eliot Bedel" is already the nav wordmark 30px above, and "Portfolio"
+            competes with the CV noun used in <title>, OG and JSON-LD. */}
+        <div className="hero__topline" data-in>
+          <span className="meta">Curriculum vitæ · 2026</span>
+          <span className="meta">Nantes, France · Disponible</span>
+        </div>
 
-      <div className="hero__grid">
-        <div className="hero__content">
-          <p className="hero__eyebrow">Dossier professionnel — 2026</p>
-          <h1 className="hero__name" aria-label="Eliot Bedel">
-            <span aria-hidden="true">
-              <BlurText text="Eliot" as="span" />
-              <br />
-              <BlurText text="Bedel" as="span" delay={40} startDelay={150} />
+        {/* The glyph spans would be announced letter by letter by some screen
+            readers, so the accessible name is set once on the heading and the
+            decorative split is hidden from the tree. */}
+        <h1 className="hero__title" aria-label={TITLE_TEXT} ref={titleRef}>
+          {lines.map((segments, li) => (
+            <span className="line" key={li} aria-hidden="true">
+              {segments.map((seg, si) => (
+                <span className={seg.thin ? "thin" : undefined} key={si}>
+                  {seg.chars.map(({ ch, i }) =>
+                    isSpace(ch) ? (
+                      " "
+                    ) : (
+                      <span className="hero__g" key={i}>
+                        {ch}
+                      </span>
+                    ),
+                  )}
+                </span>
+              ))}
+              {/* Keeps the two lines separated in textContent, so copy-paste and
+                  find-in-page get "Une vision 360° du risque cyber" rather than
+                  the joined string. Collapses at the end of a block line. */}
+              {li === 0 ? " " : null}
             </span>
-          </h1>
-          <p className="hero__title">{profile.title}</p>
-          <p className="hero__keywords">{profile.keywords.join(" · ")}</p>
-          <p className="hero__bio">{profile.bio}</p>
-          <div className="hero__cta">
-            <a href="#parcours" className="btn btn--primary">
-              Voir le parcours
-            </a>
-            <a href="#contact" className="btn btn--ghost">
-              Me contacter
-            </a>
+          ))}
+        </h1>
+
+        {/* Just the category now: the hinge moved up into the H1. It used to
+            carry both, which meant the site's most informative sentence sat in
+            14px tracked uppercase mono — and was `display:none`d on phones, the
+            primary device, deleting the differentiator exactly where it was
+            needed most. */}
+        <p className="hero__role" data-in>
+          Ingénieur cybersécurité
+        </p>
+
+        <div className="hero__lower">
+          <div className="hero__intro">
+            {/* The closing clause moved up to the role line; kept here it would
+                repeat verbatim 40px below itself. */}
+            <p className="hero__lead" data-in>
+              J'extrais le <span className="serif">signal</span> du bruit. Je
+              traduis la complexité technique en risques métier actionnables.
+            </p>
+
+            <div className="hero__foot">
+              <dl className="hero__stats" data-in>
+                {STATS.map((s) => (
+                  <div className="hstat" key={s.k}>
+                    <dt>{s.k}</dt>
+                    <dd>{s.v}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <div className="hero__actions" data-in>
+                <a className="btn btn--solid" href={CV_URL} download>
+                  Télécharger le CV
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                    <path
+                      d="M6.5 1.5V9M6.5 9L3.5 6M6.5 9L9.5 6M2 11h9"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
+                <span className="meta">PDF · optimisé ATS</span>
+              </div>
+            </div>
           </div>
 
-          <div className="hero__stats">
-            <div className="hero__stat">
-              <span className="hero__stat-value">9 ans</span>
-              <span className="hero__stat-label">IT &amp; cybersécurité</span>
-            </div>
-            <div className="hero__stat">
-              <span className="hero__stat-value">3 ans</span>
-              <span className="hero__stat-label">Pilotage Red Team &amp; pentest</span>
-            </div>
-            <div className="hero__stat">
-              <span className="hero__stat-value">2e</span>
-              <span className="hero__stat-label">CTF NetWars London</span>
-            </div>
-          </div>
+          {/* No caption: it repeated the "Nantes" already in the topline, and it
+              was the half of the mobile overlap that carried no information. */}
+          <figure className="hero__portrait" data-in>
+            <img
+              src={portrait}
+              alt="Portrait d'Eliot Bedel"
+              width="1448"
+              height="1086"
+            />
+          </figure>
         </div>
 
-        <div className="hero__photo-panel">
-          <img className="hero__photo" src={photo} alt="Portrait d'Eliot Bedel" />
-          <div className="hero__photo-grain" aria-hidden="true" />
-          <div className="hero__photo-fade" aria-hidden="true" />
-          <div className="hero__badge">
-            <span className="hero__badge-label">Basé à</span>
-            <span className="hero__badge-value">{profile.contact.address}</span>
-          </div>
-        </div>
+        <button
+          className="hero__scroll"
+          data-in
+          onClick={() => scrollTo("#approche")}
+          aria-label="Défiler vers l'approche"
+        >
+          <span className="line-y" />
+          <span className="meta">Défiler</span>
+        </button>
       </div>
-
-      <a className="hero__scroll" href="#parcours" aria-label="Défiler vers le parcours">
-        <span />
-      </a>
     </section>
   );
 }

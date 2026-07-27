@@ -4,14 +4,17 @@
     <meta charset="UTF-8" />
     <script>
       (function () {
-        var stored = localStorage.getItem("cv-theme");
-        var theme =
-          stored === "light" || stored === "dark"
-            ? stored
-            : window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "dark"
-              : "light";
-        document.documentElement.setAttribute("data-theme", theme);
+        // The intro loader locks the page at 100vh while it plays, so Lenis and
+        // ScrollTrigger would both measure a clamped document if the browser
+        // restored a previous scroll offset — leaving the scroll dead and every
+        // section stuck at opacity 0 after a reload further down the page.
+        // Own the entry point instead; App restores any #hash once handed over.
+        if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+        // The palette switcher and motion toggle are gone, so nothing reads the
+        // old `cv-palette` / `cv-motion` keys any more: a returning visitor who
+        // had stored a choice would otherwise be stuck with it for good. Sapin
+        // and full motion are now simply the site.
+        document.documentElement.setAttribute("data-motion", "full");
       })();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

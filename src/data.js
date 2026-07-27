@@ -80,19 +80,19 @@ export const education = [
     period: "2021 - 2022",
     title: "Expert en Sécurité Digitale",
     school: "ENI École Informatique, Nantes",
-    detail: "Titre RNCP de niveau VII — en alternance",
+    detail: "Titre RNCP de niveau VII · en alternance",
   },
   {
     period: "2019 - 2021",
     title: "Administrateur Systèmes et Réseaux",
     school: "ENI École Informatique, Nantes",
-    detail: "Titre RNCP de niveau VI — en alternance",
+    detail: "Titre RNCP de niveau VI · en alternance",
   },
   {
     period: "2017 - 2019",
     title: "Technicien Supérieur de Support Informatique",
     school: "ENI École Informatique, Nantes",
-    detail: "Titre RNCP de niveau III — en alternance",
+    detail: "Titre RNCP de niveau III · en alternance",
   },
   {
     period: "2016",
@@ -108,12 +108,12 @@ export const certifications = [
     org: "SANS Institute",
     fullName: "GIAC Web Application Penetration Tester",
     detail:
-      "Méthodologie de pentest web OWASP complète, de la reconnaissance à l'exploitation : injections SQL/NoSQL, XSS, CSRF, SSRF, XXE, SSTI, contournement d'authentification et d'autorisation — avec Burp Suite, ffuf, sqlmap et Metasploit.",
+      "Méthodologie de pentest web OWASP complète, de la reconnaissance à l'exploitation : injections SQL/NoSQL, XSS, CSRF, SSRF, XXE, SSTI, contournement d'authentification et d'autorisation, avec Burp Suite, ffuf, sqlmap et Metasploit.",
   },
   {
     name: "Pro Lab Zephyr",
     org: "Hack The Box",
-    fullName: "Professional Lab — Red Team Active Directory",
+    fullName: "Professional Lab · Red Team Active Directory",
     detail:
       "Opération red team multi-domaines : attaques Kerberos, relais NTLM, mouvement latéral et pivoting jusqu'à Domain Admin.",
   },
@@ -211,6 +211,7 @@ export const hobbies = {
     "Jeux vidéo compétitif",
     "Bénévole événementiel (BZHack)",
     "Piano",
+    "Finance",
     "Blockchain",
     "Macro-économie",
   ],

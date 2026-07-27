@@ -3,14 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <script>
-      // Apply the saved palette before paint to avoid a flash.
       (function () {
-        var p = localStorage.getItem("cv-palette");
-        if (p === "vermillon" || p === "platine")
-          document.documentElement.setAttribute("data-palette", p);
+        var stored = localStorage.getItem("cv-theme");
+        var theme =
+          stored === "light" || stored === "dark"
+            ? stored
+            : window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        document.documentElement.setAttribute("data-theme", theme);
       })();
     </script>
-    <link rel="icon" type="image/svg+xml" href="/v5/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/v4/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
@@ -55,22 +59,22 @@
         }
       }
     </script>
-    <script type="module" crossorigin src="/v5/assets/index-5qHpSRqI.js"></script>
-    <link rel="stylesheet" crossorigin href="/v5/assets/index-BY_3O4x6.css">
+    <script type="module" crossorigin src="/v4/assets/index-BchOmLxe.js"></script>
+    <link rel="stylesheet" crossorigin href="/v4/assets/index-BH88mFV5.css">
   </head>
   <body>
     <div id="root"></div>
-    <!-- v5-main-banner: injected by scripts/inject-v5-banner.mjs -->
+    <!-- v4-latest-banner: injected by scripts/inject-v4-banner.mjs -->
     <style>
-      #v5-main-banner{position:fixed;left:50%;top:82px;transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:14px;padding:9px 10px 9px 18px;border-radius:999px;background:rgba(13,20,17,.9);color:#e7eae6;font-family:system-ui,-apple-system,sans-serif;font-size:13px;line-height:1;box-shadow:0 10px 34px rgba(0,0,0,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(231,234,230,.16)}
-      #v5-main-banner b{font-weight:600}
-      #v5-main-banner a{color:#0d1411;background:#4fa587;padding:8px 15px;border-radius:999px;text-decoration:none;font-weight:600;white-space:nowrap;transition:background .2s ease}
-      #v5-main-banner a:hover{background:#77c4a6}
-      @media(max-width:560px){#v5-main-banner{font-size:12px;gap:9px;padding:7px 8px 7px 13px;max-width:94vw}}
+      #v4-latest-banner{position:fixed;left:50%;top:82px;transform:translateX(-50%);z-index:2147483000;display:flex;align-items:center;gap:14px;padding:9px 10px 9px 18px;border-radius:999px;background:rgba(13,24,17,.9);color:#eef1ea;font-family:system-ui,-apple-system,sans-serif;font-size:13px;line-height:1;box-shadow:0 10px 34px rgba(0,0,0,.4);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(238,241,234,.18)}
+      #v4-latest-banner b{font-weight:600}
+      #v4-latest-banner a{color:#0d1811;background:#b9c2b7;padding:8px 15px;border-radius:999px;text-decoration:none;font-weight:600;white-space:nowrap;transition:background .2s ease}
+      #v4-latest-banner a:hover{background:#cfd8cd}
+      @media(max-width:560px){#v4-latest-banner{font-size:12px;gap:9px;padding:7px 8px 7px 13px;max-width:94vw}}
     </style>
-    <div id="v5-main-banner" role="note" aria-label="Changer de version">
-      <span>Vous consultez la <b>V5</b> (version créative)</span>
-      <a href="/">Site principal &rarr;</a>
+    <div id="v4-latest-banner" role="note" aria-label="Changer de version">
+      <span>Vous consultez la <b>V4</b> (version antérieure)</span>
+      <a href="/">Version actuelle &rarr;</a>
     </div>
   </body>
 </html>

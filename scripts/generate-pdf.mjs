@@ -15,7 +15,7 @@ import {
   skills,
 } from "../src/data.js";
 
-const ACCENT = "#0071e3";
+const ACCENT = "#2f6b52"; // vert sapin (cohérent avec le site)
 const TEXT = "#1d1d1f";
 const TEXT_DIM = "#6e6e73";
 const BORDER = "#d8d8dc";
@@ -200,7 +200,11 @@ function CertificationsSection() {
         h(
           View,
           { style: styles.entryHeaderRow },
-          h(Text, { style: styles.eduTitle }, `${cert.name} — ${cert.org}`),
+          h(
+            Text,
+            { style: styles.eduTitle },
+            `${cert.name} · ${cert.org}${cert.status ? ` (${cert.status})` : ""}`,
+          ),
         ),
         h(Text, { style: styles.eduSchool }, cert.fullName),
       ),
@@ -227,7 +231,7 @@ function SkillsSection() {
 function ResumeDocument() {
   return h(
     Document,
-    { title: `CV — ${profile.name}`, author: profile.name },
+    { title: `CV ${profile.name}`, author: profile.name },
     h(
       Page,
       { size: "A4", style: styles.page },
@@ -249,13 +253,13 @@ function ResumeDocument() {
       h(
         Text,
         { style: styles.footer, fixed: true },
-        `${profile.name} — ${profile.title}`,
+        `${profile.name} · ${profile.title}`,
       ),
     ),
   );
 }
 
-const outputPath = process.argv[2] ?? "dist/eliot-bedel-cv.pdf";
+const outputPath = process.argv[2] ?? "public/eliot-bedel-cv.pdf";
 
 await renderToFile(h(ResumeDocument), outputPath);
 
