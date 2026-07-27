@@ -716,11 +716,19 @@ main {
 /* Role line — the job title, demoted out of the signature but kept high and
    legible, because a recruiter scanning for two seconds needs the category even
    though the H1 now carries the argument. */
+/* Role line — the job title, demoted out of the signature but kept high and
+   legible, because a recruiter scanning for two seconds needs the category even
+   though the H1 now carries the argument.
+   Sized up from 14.2px: it was 10.9% of the H1 and smaller than the stat labels
+   it outranks, sitting in the gap between a 131px signature and a 25.6px lead
+   while being the hero's only mention of the profession. Tracking eases from
+   0.16em to 0.13em — tracked uppercase gets loose as it grows. */
 .hero__role {
   margin-top: clamp(0.9rem, 2vh, 1.4rem);
   font-family: var(--f-mono);
-  font-size: clamp(0.72rem, 0.62rem + 0.3vw, 0.9rem);
-  letter-spacing: 0.16em;
+  font-size: clamp(0.9rem, 0.78rem + 0.42vw, 1.18rem);
+  font-weight: 500;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--bone-2);
 }
@@ -1027,22 +1035,6 @@ main {
     grid-template-columns: 0.32fr 0.68fr;
   }
 }
-.manifesto__body {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(1.5rem, 3.5vw, 2.75rem);
-}
-.manifesto__title {
-  font-size: var(--fs-h3);
-  max-width: 20ch;
-}
-/* Reading measure, not display measure: this is the one place in the section
-   that carries concrete facts rather than a statement. */
-.manifesto__prose {
-  max-width: 62ch;
-  color: var(--bone-2);
-}
-
 .manifesto__text {
   font-family: var(--f-display);
   font-weight: 480;
@@ -1313,6 +1305,10 @@ main {
   padding: clamp(1.85rem, 3vw, 2.85rem);
   display: flex;
   flex-direction: column;
+  /* A grid item's min-width is auto, so the card refused to shrink below the
+     min-content width of its nowrap status badge and pushed 31px past a 320px
+     viewport. The badge keeps its nowrap; the card yields instead. */
+  min-width: 0;
   gap: 1.15rem;
   transition: background 0.5s var(--ease), border-color 0.5s var(--ease);
   position: relative;
@@ -1325,10 +1321,16 @@ main {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  /* Same trap as .sec-head: `.cert__status` is nowrap and cannot shrink, so on a
-     320px viewport the card overflowed by 15px instead of stacking. */
-  flex-wrap: wrap;
   gap: 1rem;
+}
+/* The name column has to be the thing that yields, not the badge. Wrapping the
+   row instead dropped the badge onto its own line whenever the name was long
+   ("ISO 27005 Risk Manager"), so the badges sat 96px apart card to card. With
+   min-width:0 the name wraps inside its own column, the badge keeps its
+   top-right slot on every card, and the 320px overflow the wrap was hiding is
+   still fixed — the name can now shrink below its longest word. */
+.cert__top > div:first-child {
+  min-width: 0;
 }
 .cert__name {
   font-family: var(--f-display);
@@ -1457,8 +1459,16 @@ main {
 
 .dist {
   display: grid;
-  gap: clamp(2rem, 4vw, 3rem);
+  /* The two blocks were reading as one list: podiums and interests are
+     different kinds of fact — one is a result, the other is context — and at the
+     old gap the eye ran straight from the awards into the pills. Wider gap plus
+     a rule gives the second block its own start without adding a heading. */
+  gap: clamp(2.75rem, 5.5vw, 4.25rem);
   align-content: start;
+}
+.dist__block + .dist__block {
+  border-top: 1px solid var(--line);
+  padding-top: clamp(2rem, 4vw, 3rem);
 }
 .dist__block h3 {
   font-size: var(--fs-h3);

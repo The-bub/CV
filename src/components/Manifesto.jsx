@@ -115,10 +115,11 @@ export default function Manifesto() {
           </div>
 
           <div className="manifesto__body">
-            {/* The scrubbed statement opens the panel; the heading and the
-                concrete detail land under it, so the section reads claim first,
-                evidence second rather than announcing itself twice. */}
-            <p className="manifesto__text" ref={textRef}>
+            {/* An h2, not a p: this statement IS the section's heading, and
+                without it the document jumped h1 → h2 (Parcours) with this panel
+                contributing nothing to the outline. Styled entirely by
+                .manifesto__text, so the element change costs no visual change. */}
+            <h2 className="manifesto__text" ref={textRef}>
               {TOKENS.map((tok, i) => {
                 const isEm = typeof tok === "object";
                 const text = isEm ? tok.t : tok;
@@ -132,20 +133,7 @@ export default function Manifesto() {
                   </span>
                 );
               })}
-            </p>
-
-            {/* The section had no heading of its own — only a mono block-label —
-                so the document went h1 → h2 (Parcours) with this panel silent. */}
-            <h2 className="manifesto__title" data-mi>
-              Traduire la complexité technique en décision
             </h2>
-            <p className="manifesto__prose" data-mi>
-              J'ai piloté une Red Team et mené des tests d'intrusion durant 3 ans,
-              avant de me tourner vers le management du risque IT. Aujourd'hui,
-              j'accompagne l'identification et la maîtrise des risques sur des
-              périmètres applicatifs et des activités critiques, pour offrir une
-              vision 360° du risque cyber.
-            </p>
           </div>
         </div>
       </div>
