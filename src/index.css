@@ -874,7 +874,11 @@ main {
 
 .hero__scroll {
   position: absolute;
-  left: var(--gutter);
+  /* Track the content wrap's left edge, not the window gutter. Above ~1552px
+     the wrap caps at --maxw and centres, leaving the cue stranded ~184px to the
+     left of the whole composition; max() pins it to the wrap once that margin
+     opens and falls back to the gutter below it. */
+  left: max(var(--gutter), calc((100vw - var(--maxw)) / 2));
   bottom: clamp(1.5rem, 4vh, 2.5rem);
   display: flex;
   align-items: center;
@@ -1000,8 +1004,15 @@ main {
    width — otherwise the CV button and the scroll cue fall below the fold, which
    is exactly where the primary action must not be. Signature type, portrait and
    vertical rhythm all step down together so the composition keeps its
-   proportions instead of just getting cropped. */
-@media (min-width: 820px) and (max-height: 860px) {
+   proportions instead of just getting cropped.
+
+   Ceiling raised 860 → 930: a 24" 1080p external display run through browser
+   chrome + an OS taskbar lands the usable viewport around 860–900px, and the
+   natural hero ran ~926px there — overflowing the fold, which dropped the CV
+   button onto the bottom edge and pushed the scroll cue out of sight. The Air's
+   956px viewport clears it, so it never showed there. The compaction is mild
+   (type/portrait/rhythm step down), so extending its range is safe. */
+@media (min-width: 820px) and (max-height: 930px) {
   .hero__title {
     font-size: clamp(2.6rem, 0.4rem + 6.4vw, 6.4rem);
   }
