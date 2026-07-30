@@ -742,7 +742,7 @@ main {
 }
 @media (min-width: 820px) {
   .hero__lower {
-    grid-template-columns: 1fr minmax(240px, 0.42fr);
+    grid-template-columns: 1fr minmax(260px, 0.46fr);
   }
 }
 
@@ -820,9 +820,12 @@ main {
   .hero__portrait {
     justify-self: end;
     align-self: end;
-    /* Fills the grid track (~376px at 1440px, see .hero__lower's 0.42fr) —
-       21% wider than the 310px it replaces. */
-    max-width: 376px;
+    /* Fills the grid track (~420px at 1440px, see .hero__lower's 0.46fr). Was a
+       flat 376px — undersized against the 152px signature on a 24" display, with
+       the intro column measuring taller than the portrait beside it. Capped by
+       39vh so it eases back on shorter desktop viewports (a 956px MacBook Air
+       lands ~373px, its old size) instead of driving the hero past the fold. */
+    max-width: min(420px, 39vh);
   }
 }
 .hero__portrait img {
@@ -1017,7 +1020,11 @@ main {
     font-size: clamp(2.6rem, 0.4rem + 6.4vw, 6.4rem);
   }
   .hero__portrait {
-    max-width: clamp(170px, 25vh, 310px);
+    /* Was clamp(170px, 25vh, 310px), which bottomed the portrait at ~216px on a
+       864px 24" viewport while the intro column beside it ran ~269px. Scaled to
+       height so it reads as a peer of the signature, still short enough to keep
+       the CV button and scroll cue above the fold. */
+    max-width: clamp(220px, 32vh, 360px);
   }
   .hero__topline {
     margin-bottom: 1rem;
