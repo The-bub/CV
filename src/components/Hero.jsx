@@ -1,4 +1,12 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  lazy,
+  Suspense,
+} from "react";
 import { gsap, prefersReducedMotion } from "../lib/gsap";
 import { scrollTo } from "../lib/scroll";
 import {
@@ -13,6 +21,10 @@ import {
   holdStill,
 } from "../lib/drift";
 import portrait from "../assets/eliot-bedel-2026-v2.jpg";
+
+// The instrument beside the portrait. Three.js is heavy and this is purely
+// decorative, so it streams in behind the hero rather than blocking first paint.
+const Sextant = lazy(() => import("./Sextant"));
 
 const CV_URL = "/eliot-bedel-cv.pdf";
 
@@ -233,6 +245,12 @@ export default function Hero({ ready }) {
           <span className="meta">Nantes, France · Disponible</span>
         </div>
 
+        {/* Two columns from here down: the argument and the call to action on
+            the left, the instrument standing on the right. The title is sized
+            to its own column (container query in the CSS), so it can never spill
+            into the stage. */}
+        <div className="hero__body">
+          <div className="hero__content">
         {/* The glyph spans would be announced letter by letter by some screen
             readers, so the accessible name is set once on the heading and the
             decorative split is hidden from the tree. */}
@@ -269,53 +287,65 @@ export default function Hero({ ready }) {
           Ingénieur cybersécurité
         </p>
 
-        <div className="hero__lower">
-          <div className="hero__intro">
-            {/* The closing clause moved up to the role line; kept here it would
-                repeat verbatim 40px below itself. */}
-            <p className="hero__lead" data-in>
-              J'extrais le <span className="serif">signal</span> du bruit. Je
-              traduis la complexité technique en risques métier actionnables.
-            </p>
+        {/* The closing clause moved up to the role line; kept here it would
+            repeat verbatim 40px below itself. */}
+        <p className="hero__lead" data-in>
+          J'extrais le <span className="serif">signal</span> du bruit. Je
+          traduis la complexité technique en risques métier actionnables.
+        </p>
 
-            <div className="hero__foot">
-              <dl className="hero__stats" data-in>
-                {STATS.map((s) => (
-                  <div className="hstat" key={s.k}>
-                    <dt>{s.k}</dt>
-                    <dd>{s.v}</dd>
-                  </div>
-                ))}
-              </dl>
-
-              <div className="hero__actions" data-in>
-                <a className="btn btn--solid" href={CV_URL} download>
-                  Télécharger le CV
-                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-                    <path
-                      d="M6.5 1.5V9M6.5 9L3.5 6M6.5 9L9.5 6M2 11h9"
-                      stroke="currentColor"
-                      strokeWidth="1.3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </a>
-                <span className="meta">PDF · optimisé ATS</span>
+        <div className="hero__foot">
+          <dl className="hero__stats" data-in>
+            {STATS.map((s) => (
+              <div className="hstat" key={s.k}>
+                <dt>{s.k}</dt>
+                <dd>{s.v}</dd>
               </div>
-            </div>
+            ))}
+          </dl>
+
+          <div className="hero__actions" data-in>
+            <a className="btn btn--solid" href={CV_URL} download>
+              Télécharger le CV
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                <path
+                  d="M6.5 1.5V9M6.5 9L3.5 6M6.5 9L9.5 6M2 11h9"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </a>
+            <span className="meta">PDF · optimisé ATS</span>
+          </div>
+        </div>
           </div>
 
-          {/* No caption: it repeated the "Nantes" already in the topline, and it
-              was the half of the mobile overlap that carried no information. */}
-          <figure className="hero__portrait" data-in>
-            <img
-              src={portrait}
-              alt="Portrait d'Eliot Bedel"
-              width="1448"
-              height="1086"
-            />
-          </figure>
+          {/* The stage: the sextant standing at full height, the person shown
+              small beneath it as a labelled specimen, and a machinist's caption
+              naming the object. The sextant is decorative and streams in on its
+              own, so a missing or slow WebGL context never holds up the card. */}
+          <div className="hero__stage">
+            <Suspense fallback={null}>
+              <Sextant />
+            </Suspense>
+
+            <div className="hero__specimen" data-in>
+              <div className="hero__id">
+                <span className="hero__id-name">Eliot Bedel</span>
+                <span className="meta">Nantes · Disponible</span>
+              </div>
+              <figure className="hero__portrait">
+                <img
+                  src={portrait}
+                  alt="Portrait d'Eliot Bedel"
+                  width="1448"
+                  height="1086"
+                />
+              </figure>
+            </div>
+          </div>
         </div>
 
         <button

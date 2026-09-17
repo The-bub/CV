@@ -637,8 +637,14 @@ main {
      at 6.152×, line 2 peaks at 6.988×. 7.2 covers the worst with ~3% headroom.
      The metric-matched @font-face at the top of this file keeps the Georgia
      fallback inside the same bound.
-     RE-MEASURE ACROSS THE WHOLE SIZE RANGE IF THE SIGNATURE COPY CHANGES. */
-  font-size: min(var(--fs-mega), calc((100vw - 2 * var(--gutter)) / 7.2));
+     RE-MEASURE ACROSS THE WHOLE SIZE RANGE IF THE SIGNATURE COPY CHANGES.
+
+     Sized in cqw against .hero__content, its column: the divisor still guards
+     the widest line, but now against the width the signature actually gets
+     rather than the whole viewport, so it fills the left column on desktop and
+     never crosses into the sextant's stage. On a single-column phone the
+     content column spans the wrap, so this matches the old viewport formula. */
+  font-size: min(var(--fs-mega), calc(100cqw / 7.2));
   font-weight: 600;
   line-height: 0.9;
   letter-spacing: -0.04em;
@@ -733,23 +739,46 @@ main {
   color: var(--bone-2);
 }
 
-.hero__lower {
+/* The hero body: argument and call to action on the left, the instrument on
+   the right. A single column until there is room for the stage to stand beside
+   the text without either being squeezed. */
+.hero__body {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(2rem, 5vw, 3.5rem);
+  gap: clamp(2rem, 5vw, 3rem);
   margin-top: clamp(1.5rem, 3vh, 2.25rem);
   align-items: stretch;
 }
-@media (min-width: 820px) {
-  .hero__lower {
-    grid-template-columns: 1fr minmax(260px, 0.46fr);
+@media (min-width: 900px) {
+  .hero__body {
+    grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.82fr);
+    gap: clamp(2rem, 4vw, 4rem);
   }
 }
 
-.hero__intro {
+/* Left column. It is the sizing container for the signature: the title is set
+   in cqw so it fills THIS column and can never spill into the stage, whatever
+   the viewport does. */
+.hero__content {
   display: flex;
   flex-direction: column;
-  gap: clamp(1.5rem, 3vw, 2rem);
+  min-width: 0;
+  container-type: inline-size;
+}
+/* The title moves inside the content column, so its old top margin against the
+   topline now lives on the column; the role/lead spacing below is unchanged. */
+.hero__content .hero__title {
+  order: 1;
+}
+.hero__content .hero__role {
+  order: 2;
+}
+.hero__content .hero__lead {
+  order: 3;
+  margin-top: clamp(1.4rem, 3vh, 2rem);
+}
+.hero__content .hero__foot {
+  order: 4;
 }
 .hero__lead {
   font-size: var(--fs-lead);
@@ -808,46 +837,24 @@ main {
   transform: translateY(2px);
 }
 
-/* Portrait — warm monochrome that resolves to colour on hover */
+/* Portrait — a small labelled specimen beneath the instrument now, not a
+   column of its own. Warm monochrome that resolves to colour on hover. */
 .hero__portrait {
   position: relative;
   margin: 0;
-  width: 100%;
-  max-width: 285px;
-  justify-self: start;
-}
-@media (min-width: 820px) {
-  .hero__portrait {
-    justify-self: end;
-    align-self: end;
-    /* Fills the grid track (~420px at 1440px, see .hero__lower's 0.46fr). Was a
-       flat 376px — undersized against the 152px signature on a 24" display, with
-       the intro column measuring taller than the portrait beside it. Capped by
-       39vh so it eases back on shorter desktop viewports (a 956px MacBook Air
-       lands ~373px, its old size) instead of driving the hero past the fold. */
-    max-width: min(420px, 39vh);
-  }
+  flex: none;
+  width: clamp(76px, 15vw, 104px);
 }
 .hero__portrait img {
+  display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   object-position: center 15%;
   border: 1px solid var(--line-2);
   filter: grayscale(1) sepia(0.3) brightness(0.94) contrast(1.05);
   transition: filter 0.6s var(--ease);
-}
-/* Square on desktop, and that is what buys the width — declared after the base
-   rule on purpose, same specificity. At 4/5 the extra width came straight back
-   as height (376px wide meant 470px tall) and pushed the CV button off a
-   1440×900 fold; square is 376px tall, i.e. slightly SHORTER than the 387px it
-   replaces. The source is 4:3 landscape, so the square crop discards less than
-   the portrait crop did. */
-@media (min-width: 820px) {
-  .hero__portrait img {
-    aspect-ratio: 1 / 1;
-  }
 }
 .hero__portrait::after {
   content: "";
@@ -873,6 +880,84 @@ main {
   left: 0.85rem;
   bottom: 0.7rem;
   z-index: 1;
+}
+
+/* The stage: the instrument stands at full height, the person is shown small
+   beneath it, and a caption names the object. A flex column so the sextant
+   takes all the height going and the specimen + caption sit at its foot. */
+.hero__stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: clamp(0.6rem, 1.4vh, 1rem);
+}
+
+.hero__object {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: clamp(300px, 44vh, 420px);
+  /* Fades up once its lazy chunk mounts — the text uses the GSAP [data-in]
+     reveal, but the instrument arrives after that timeline has run, so it
+     carries its own entrance. */
+  animation: hero-object-in 1.2s var(--ease) both;
+}
+@media (min-width: 900px) {
+  .hero__object {
+    min-height: clamp(380px, 60vh, 640px);
+  }
+}
+@keyframes hero-object-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hero__object-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* A soft bloom behind the instrument so the brass separates from the field
+     without a hard panel edge. */
+  background: radial-gradient(
+    58% 52% at 56% 42%,
+    color-mix(in srgb, var(--signal) 9%, transparent),
+    transparent 72%
+  );
+}
+:root[data-motion="reduced"] .hero__object {
+  animation: none;
+}
+
+/* The person, small and labelled — a specimen card beneath the instrument. */
+.hero__specimen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.7rem, 1.4vw, 1.1rem);
+}
+@media (min-width: 900px) {
+  .hero__specimen {
+    justify-content: flex-end;
+  }
+}
+.hero__id {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+  text-align: right;
+}
+.hero__id-name {
+  font-family: var(--f-mono);
+  font-size: clamp(0.78rem, 0.72rem + 0.2vw, 0.9rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone);
 }
 
 .hero__scroll {
@@ -932,19 +1017,26 @@ main {
   .hero__title {
     line-height: 0.88;
   }
-  .hero__lower {
+  .hero__body {
     margin-top: 1rem;
-    gap: 1.5rem;
-  }
-  .hero__intro {
-    gap: 1.15rem;
+    gap: 1.75rem;
   }
   .hero__lead {
     font-size: 1.07rem;
     line-height: 1.36;
+    margin-top: 1.15rem;
   }
   .hero__foot {
     gap: 1.1rem;
+  }
+  /* The instrument is the reward on the way down, like the portrait was — sized
+     to read without stealing the fold from the CV button above it. */
+  .hero__object {
+    min-height: clamp(260px, 46vh, 380px);
+  }
+  /* The specimen reads left-to-right down the page here. */
+  .hero__specimen {
+    justify-content: flex-start;
   }
   /* One row of three. The figures are a set — 9 years, 3 offensive, 2 podiums —
      and they only read as a set on a single line; wrapped into two rows they
@@ -962,9 +1054,6 @@ main {
     font-size: 0.76rem;
     line-height: 1.25;
   }
-  .hero__portrait {
-    max-width: 190px;
-  }
   /* Not left to `pointer: coarse` alone: a 320px-wide layout is a phone whether
      or not the UA reports a coarse pointer, and this is the site's primary
      action. The pointer query below still catches touch on larger screens. */
@@ -980,7 +1069,7 @@ main {
    height and the cue's position independent, so on narrow screens the cue simply
    rejoins the flow as the last element of the hero — where it also reads better,
    arriving after the portrait rather than on top of it. */
-@media (max-width: 820px) {
+@media (max-width: 900px) {
   .hero__scroll {
     position: static;
     min-height: 44px;
@@ -1017,23 +1106,20 @@ main {
    (type/portrait/rhythm step down), so extending its range is safe. */
 @media (min-width: 820px) and (max-height: 930px) {
   .hero__title {
-    font-size: clamp(2.6rem, 0.4rem + 6.4vw, 6.4rem);
+    /* Cap the signature lower on short viewports so the CV button and scroll
+       cue stay above the fold; still sized to its own column via cqw. */
+    font-size: min(6.4rem, calc(100cqw / 7.2));
   }
-  .hero__portrait {
-    /* Was clamp(170px, 25vh, 310px), which bottomed the portrait at ~216px on a
-       864px 24" viewport while the intro column beside it ran ~269px. Scaled to
-       height so it reads as a peer of the signature, still short enough to keep
-       the CV button and scroll cue above the fold. */
-    max-width: clamp(220px, 32vh, 360px);
+  .hero__object {
+    /* The instrument answers to viewport HEIGHT here too — a full 60vh stage
+       on an 860px laptop would drive the specimen and caption past the fold. */
+    min-height: clamp(300px, 46vh, 480px);
   }
   .hero__topline {
     margin-bottom: 1rem;
   }
-  .hero__lower {
+  .hero__body {
     margin-top: 1rem;
-  }
-  .hero__intro {
-    gap: 1.25rem;
   }
   .hero__foot {
     gap: 1.15rem;
