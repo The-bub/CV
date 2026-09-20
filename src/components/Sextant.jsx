@@ -88,7 +88,13 @@ export default function Sextant() {
     // (the old right-ward lean opened a dead gap between the text and the
     // instrument) while still reading the graduated limb and the telescope.
     const dir = new Vector3(0.06, 0.1, 1).normalize();
-    const MARGIN = 1.04;
+    // Comfortable headroom on every axis. halfW is already the widest the
+    // silhouette gets as the object turns on Y, but the pointer-parallax tilt
+    // (rotation.x) nudges the top and bottom past a pure side view, so a tight
+    // fit clipped an edge at some viewport ratios and rotation angles — read as
+    // the object being "cut" on arrival. 18% keeps the whole instrument inside
+    // the frame through the full turn and the lean.
+    const MARGIN = 1.18;
 
     const frame = () => {
       const fovV = (camera.fov * Math.PI) / 360;
