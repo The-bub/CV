@@ -6,7 +6,6 @@ import {
   HemisphereLight,
   DirectionalLight,
   Box3,
-  Sphere,
   Vector3,
   ACESFilmicToneMapping,
 } from "three";
@@ -75,27 +74,49 @@ export default function Sextant() {
 
     // Frame the camera to the object's bounds, tilted a touch above the
     // horizon so the graduated limb and the telescope both read.
+    // Contain-fit: frame the instrument to whichever axis binds for the current
+    // canvas shape, so it FILLS the stage instead of floating in it. Height is
+    // measured from the box; the horizontal extent uses the x/z diagonal, which
+    // is the widest the silhouette ever gets as the object turns on Y — so the
+    // arc and telescope never clip mid-rotation whatever the aspect ratio.
     const box = new Box3().setFromObject(object);
-    const sphere = box.getBoundingSphere(new Sphere());
-    // Framed tight so the instrument fills its stage — it is the hero object
-    // now, not a thumbnail. A hair of headroom keeps the arc and pedestal off
-    // the canvas edges as it turns.
-    const dist =
-      (sphere.radius / Math.tan((camera.fov * Math.PI) / 360)) * 1.06;
-    const target = sphere.center;
-    const dir = new Vector3(0.16, 0.14, 1).normalize();
-    camera.position.copy(target).addScaledVector(dir, dist);
-    camera.lookAt(target);
+    const size = box.getSize(new Vector3());
+    const target = box.getCenter(new Vector3());
+    const halfW = 0.5 * Math.hypot(size.x, size.z);
+    const halfH = 0.5 * size.y;
+    // Near-frontal, a touch above the horizon: centres the mass in the column
+    // (the old right-ward lean opened a dead gap between the text and the
+    // instrument) while still reading the graduated limb and the telescope.
+    const dir = new Vector3(0.06, 0.1, 1).normalize();
+    const MARGIN = 1.04;
 
+    const frame = () => {
+      const fovV = (camera.fov * Math.PI) / 360;
+      const fovH = Math.atan(Math.tan(fovV) * camera.aspect);
+      const dist = Math.max(halfH / Math.tan(fovV), halfW / Math.tan(fovH)) * MARGIN;
+      camera.position.copy(target).addScaledVector(dir, dist);
+      camera.lookAt(target);
+    };
+
+    let framed = false;
     const resize = () => {
-      const w = canvas.clientWidth || 1;
-      const h = canvas.clientHeight || 1;
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      // Skip degenerate sizes: the instrument mounts (lazily) while the loader
+      // still has the page locked, so the first measurement can be 0 or the
+      // pre-layout min-height. Framing against that is what flashed a mis-scaled,
+      // clipped object at the start. A ResizeObserver re-frames the moment the
+      // real box lands, so the object only ever appears correctly sized.
+      if (w < 2 || h < 2) return;
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
+      frame();
+      framed = true;
     };
     resize();
-    window.addEventListener("resize", resize);
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
 
     // Pointer parallax: a slight, eased lean toward the cursor while it is over
     // the hero. Kept tiny — this is a nudge that acknowledges the visitor, not
@@ -119,6 +140,9 @@ export default function Sextant() {
     const render = (now) => {
       raf = requestAnimationFrame(render);
       if (!running || !onScreen) return;
+      // Hold the very first paints until the instrument has been framed against
+      // its real box — never show it mis-scaled while the layout settles.
+      if (!framed) return;
 
       const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
@@ -168,7 +192,7 @@ export default function Sextant() {
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
-      window.removeEventListener("resize", resize);
+      ro.disconnect();
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("visibilitychange", onVisibility);
       offMotion();
