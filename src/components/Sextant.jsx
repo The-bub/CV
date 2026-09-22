@@ -5,6 +5,7 @@ import {
   PerspectiveCamera,
   HemisphereLight,
   DirectionalLight,
+  Group,
   Box3,
   Vector3,
   ACESFilmicToneMapping,
@@ -70,10 +71,7 @@ export default function Sextant() {
     scene.add(rim);
 
     const object = buildSextant();
-    scene.add(object);
 
-    // Frame the camera to the object's bounds, tilted a touch above the
-    // horizon so the graduated limb and the telescope both read.
     // Contain-fit: frame the instrument to whichever axis binds for the current
     // canvas shape, so it FILLS the stage instead of floating in it. Height is
     // measured from the box; the horizontal extent uses the x/z diagonal, which
@@ -81,7 +79,20 @@ export default function Sextant() {
     // arc and telescope never clip mid-rotation whatever the aspect ratio.
     const box = new Box3().setFromObject(object);
     const size = box.getSize(new Vector3());
-    const target = box.getCenter(new Vector3());
+    const center = box.getCenter(new Vector3());
+
+    // The model's origin is at the foot of the pedestal, so rotating the object
+    // directly swung the whole instrument around its base — a pointer tilt
+    // walked the pedestal clean out of the bottom of the frame. Hang it off a
+    // pivot at its bounding-box centre so the spin and the parallax tilt turn it
+    // in place, and the camera targets that same centre.
+    const pivot = new Group();
+    object.position.sub(center);
+    pivot.add(object);
+    pivot.position.copy(center);
+    scene.add(pivot);
+
+    const target = center.clone();
     const halfW = 0.5 * Math.hypot(size.x, size.z);
     const halfH = 0.5 * size.y;
     // Near-frontal, a touch above the horizon: centres the mass in the column
@@ -158,8 +169,8 @@ export default function Sextant() {
         leanX += (pointerX * 0.12 - leanX) * 0.05;
         leanY += (-pointerY * 0.08 - leanY) * 0.05;
       }
-      object.rotation.y = spin + leanX;
-      object.rotation.x = leanY;
+      pivot.rotation.y = spin + leanX;
+      pivot.rotation.x = leanY;
 
       renderer.render(scene, camera);
 
