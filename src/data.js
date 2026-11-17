@@ -118,19 +118,18 @@ export const certifications = [
       "Opération red team multi-domaines : attaques Kerberos, relais NTLM, mouvement latéral et pivoting jusqu'à Domain Admin.",
   },
   {
-    name: "CISSP",
-    org: "ISC2",
-    fullName: "Certified Information Systems Security Professional",
-    detail:
-      "Référentiel de sécurité de l'information couvrant la gouvernance, la gestion des risques, l'architecture et les opérations de sécurité.",
-    status: "En préparation",
-  },
-  {
     name: "ISO 27005 Risk Manager",
     org: "PECB",
     fullName: "Certified ISO/IEC 27005 Risk Manager",
     detail:
       "Méthodologie de gestion des risques liés à la sécurité de l'information selon la norme ISO/IEC 27005 : identification, analyse, évaluation et traitement des risques.",
+  },
+  {
+    name: "CISSP",
+    org: "ISC2",
+    fullName: "Certified Information Systems Security Professional",
+    detail:
+      "Référentiel de sécurité de l'information couvrant la gouvernance, la gestion des risques, l'architecture et les opérations de sécurité.",
     status: "En préparation",
   },
 ];
