@@ -119,7 +119,7 @@ export const certifications = [
   },
   {
     name: "ISO 27005 Risk Manager",
-    org: "PECB",
+    org: "LTSI",
     fullName: "Certified ISO/IEC 27005 Risk Manager",
     level: "Niveau intermédiaire",
     detail:
