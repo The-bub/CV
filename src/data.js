@@ -121,8 +121,9 @@ export const certifications = [
     name: "ISO 27005 Risk Manager",
     org: "PECB",
     fullName: "Certified ISO/IEC 27005 Risk Manager",
+    level: "Niveau intermédiaire",
     detail:
-      "Méthodologie de gestion des risques liés à la sécurité de l'information selon la norme ISO/IEC 27005 : identification, analyse, évaluation et traitement des risques. Certification obtenue au niveau intermédiaire.",
+      "Méthodologie de gestion des risques liés à la sécurité de l'information selon la norme ISO/IEC 27005 : identification, analyse, évaluation et traitement des risques.",
   },
   {
     name: "CISSP",

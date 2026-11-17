@@ -1491,6 +1491,36 @@ main {
   animation: pulse 2.4s var(--ease-in-out) infinite;
 }
 
+/* Obtained-level badge — same shape as status, but a solid (non-pulsing)
+   mark so it reads as achieved rather than in-progress. */
+.cert__level {
+  align-self: flex-start;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  white-space: nowrap;
+  margin-top: 0.35em;
+  font-family: var(--f-mono);
+  font-size: var(--fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--signal-2);
+  border: 1px solid color-mix(in srgb, var(--signal) 55%, transparent);
+  background: color-mix(in srgb, var(--signal) 14%, transparent);
+  border-radius: 100px;
+  padding: 0.42em 0.8em 0.42em 0.68em;
+}
+.cert__level::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--signal-2);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--signal) 60%, transparent);
+}
+
 /* ============================================================================
    EDUCATION + DISTINCTIONS
    ============================================================================ */

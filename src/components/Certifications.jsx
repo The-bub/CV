@@ -21,6 +21,7 @@ export default function Certifications() {
                   <div className="cert__org">{c.org}</div>
                 </div>
                 {c.status && <span className="cert__status">{c.status}</span>}
+                {c.level && <span className="cert__level">{c.level}</span>}
               </div>
               <div className="cert__full">{c.fullName}</div>
               <p className="cert__detail">{c.detail}</p>
